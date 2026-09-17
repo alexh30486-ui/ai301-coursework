@@ -1,31 +1,33 @@
-# AI301 Unit 1 starter: issue-select
+# AI301 Unit 1: Issue Selection
 
-Materials for Unit 1 of AI301 (issue selection). This repo holds the
-week's runnable artifacts: the issue-selection skill and its eval
-harness. All instructions live on the course portal (Overview,
-Activity, and Check-In tabs for Unit 1); this repo is the package those
-pages tell you to install and run.
+Unit 1 of AI301 focuses on a practical problem that comes before writing code: deciding which open-source issue is a good candidate for a first contribution. The goal is not simply to find an issue that looks interesting. The process is designed to evaluate whether an issue is active, available, appropriately scoped, compatible with the project's contribution policies, and realistic for a newcomer to work on. This repository contains the runnable materials that support that issue-selection process.
 
-## What's here
+The reason for starting with issue selection is that choosing the right issue can have a major effect on the contribution process that follows. A newcomer can spend significant time investigating an issue only to discover that someone else has already claimed it, that the repository is no longer active, that the requested change is much larger than expected, or that the project's contribution policies create additional requirements. Unit 1 therefore treats issue selection as a structured decision-making task rather than an informal search for something that appears easy.
 
-- `skill/`: the issue-selection skill for Claude Code, complete except
-  for one file: `skill/rubric.md` ships as an empty template. Writing
-  the rubric is the Unit 1 deliverable.
-- `eval/`: the eval harness, the gold labels, and 24 frozen issue
-  bundles (20 scored plus the 4 calibration issues from the in-class
-  activity). See `eval/README.md` for the full run and output guide.
+The repository provides the materials needed to carry out this procedure. The `skill/` directory contains the issue-selection skill used with Claude Code, while the `eval/` directory contains the evaluation harness, gold labels, and frozen issue bundles used to test the rubric. Together, these components provide both the decision procedure and a way to measure whether that procedure produces results that agree with the expected evaluations.
 
-## Install the skill
+The central deliverable in Unit 1 is the issue-selection rubric. The rubric defines the checks that should be applied consistently when evaluating candidate issues. Instead of relying on a general impression such as "this issue looks easy," the rubric breaks the decision into specific questions about repository activity, whether the repository is still in use, whether the issue has bounded newcomer scope, whether the issue is available to claim, and whether the project's contribution policy is compatible with the type of contribution being considered.
 
-Copy the whole `skill/` folder to `~/.claude/skills/issue-select/`
-(create the folders if they do not exist). Edit your rubric inside that
-installed copy and point the harness at the same file, so eval runs and
-live runs share one canonical rubric.
+The rubric is therefore the decision framework that drives the rest of the process. Each check has a defined pass condition so that the same evidence can be interpreted consistently across different issues. The final verdict is binary: an issue is either accepted or rejected. Required checks must pass for an issue to be accepted, while preferred checks can provide additional information without changing the final verdict.
 
-## Run the eval
+The `skill/` directory contains the issue-selection skill that allows this procedure to be used during live issue evaluation. The skill provides Claude Code with the instructions and supporting evidence guidance needed to apply the rubric. The skill is intentionally separated from the rubric itself so that the rubric can be developed and evaluated while the surrounding procedure remains available as a reusable workflow.
 
-From `eval/`, with the Claude Code CLI installed:
+Before running the evaluation, the skill is installed into the Claude Code skills directory at `~/.claude/skills/issue-select/`. The installed copy becomes the canonical copy used during evaluation and live runs. This matters because the evaluation harness needs to grade the same rubric that is used when selecting real candidate issues. Keeping one canonical installed rubric prevents the evaluation and the live workflow from accidentally using different versions of the decision rules.
 
-    python3 run_eval.py --rubric path/to/your-rubric.md
+The `scope.md` file provides the repository-specific context needed by the skill. In Unit 1, the repository should be set to the project being evaluated so that the live issue-selection procedure knows which GitHub repository it is analyzing. The supporting `references/evidence-guide.md` file explains how evidence should be interpreted, particularly when deciding whether an issue is appropriately scoped for a newcomer or whether an issue is already claimed.
 
-`--limit 3` gives a smoke run. Full docs: `eval/README.md`.
+Once the rubric and skill are prepared, the evaluation harness can be used to test the decision procedure. The harness is located in the `eval/` directory and contains 24 frozen issue bundles. Twenty of these issues are scored, while four are calibration issues used for the in-class activity. Each scored issue has a gold verdict that provides the expected result against which the rubric's evaluation is compared.
+
+The full evaluation is run from the `eval/` directory using the Claude Code CLI. The command takes the path to the rubric being evaluated and can save the results to an `eval-run.txt` file. A small run using options such as `--limit` or `--only` is useful while developing the rubric because it allows individual decisions to be tested quickly. However, partial runs are only for iteration; the final Unit 1 evaluation must use the complete set of 20 scored issues.
+
+The purpose of comparing the rubric's results with the gold labels is to determine whether the decision procedure is reliably identifying the same kinds of issues that the course expects to be accepted or rejected. The target is at least 18 agreements out of the 20 scored issues. The evaluation also checks agreement across the relevant categories, so a rubric should not simply perform well overall while completely missing one particular type of issue.
+
+After the rubric passes the evaluation, the same issue-selection process can be used in a live repository. Candidate issues can be supplied to the `issue-select` skill so that the procedure examines the relevant repository and issue evidence. This is where the earlier rubric work becomes useful: instead of manually deciding based on intuition, the candidate issues can be examined using the same structured checks that were tested against the evaluation set.
+
+The candidate-selection stage is also where trade-offs between issues become important. An issue may pass the required checks but still differ from another accepted issue in terms of the amount of investigation required, the number of files involved, the clarity of the requested change, or the complexity of the underlying behavior. For a first contribution, the selection process therefore considers whether the issue provides a reasonably bounded starting point while still leaving the contributor with a concrete change to implement and review.
+
+The final selection is documented in `beat-1-sandbox/unit-1/selection.md`. This file records the candidate issues, the reasoning used to compare them, the trade-offs considered, and the history of the evaluation and live runs. The purpose of documenting this reasoning is to show not only which issue was selected, but also how the structured issue-selection procedure informed that decision.
+
+The evaluation output is also preserved as part of the Unit 1 artifacts. The required `beat-1-sandbox/unit-1/eval-run.txt` file records the results of the full 20-issue evaluation, including the individual issue verdicts, category results, and overall agreement. Keeping this file with the selection write-up makes the process reproducible: the rubric can be inspected, the evaluation results can be reviewed, and the reasoning for the selected issue can be understood together.
+
+The overall procedure can therefore be viewed as a sequence: prepare the issue-selection rubric, install the skill, configure the repository scope, test the rubric against the frozen evaluation set, iterate until the agreement requirement is met, run the live issue-selection workflow against candidate issues, document the comparison and rationale, and preserve the final evaluation output. Unit 1 is not asking for code to be claimed or implemented yet. Instead, it establishes a disciplined process for identifying a suitable first issue so that the later contribution work begins with a clearly understood and appropriately bounded task.

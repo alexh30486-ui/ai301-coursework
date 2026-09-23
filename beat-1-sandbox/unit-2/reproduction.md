@@ -23,3 +23,49 @@ My `steps-followable` check says: “A stranger with only public access could re
 I could clarify `steps-followable` so a disclosed, nonmatching environment can pass when the candidate honestly reports what happened and supplies repeatable steps for that attempt. I would keep the requirements for public inputs, the issue's essential trigger, and evidence matching any claim of successful reproduction. This preserves protection against plausible reports that actually test a different command or private setup.
 
 The saved rubric already passed at 18/20. I did **not** replace it with wording that lacks a completed full evaluation: the later partial run cannot establish whether a change improves `pkg-10` without regressing other packages. A future revision would need a successful complete run, including checks on cases from the categories it might affect. The Starship report here is an evaluation package, not an observation I personally made or a comment to post upstream.
+
+## Live issue #62
+
+Issue: https://github.com/codepath/pathreview-ai301-fa26-s1/issues/62
+
+Live `repro-check` run: not completed because Claude credits were unavailable.
+
+### Claim comment
+
+Link: https://github.com/codepath/pathreview-ai301-fa26-s1/issues/62#issuecomment-5804257717
+
+I’d like to investigate #62. The issue points to the Redis probe in `api/routes/health.py` reading `settings.redis_host` and `settings.redis_port`, while `Settings` defines `redis_url` instead.
+
+I’ll reproduce `GET /health` with Redis running, record my environment and the response and logs I actually observe, then report the steps and findings here before proposing a change.
+
+### Reproduction comment
+
+Link: https://github.com/codepath/pathreview-ai301-fa26-s1/issues/62#issuecomment-5804391603
+
+I reproduced the Redis health-check failure on macOS 26.6, Python 3.13, at commit f89c06f. Redis 7 was running, and redis-cli ping returned PONG. PostgreSQL 16 was running on local port 5434 because port 5433 was occupied.
+I called the repository’s /health route with FastAPI’s TestClient and its real database dependency:
+
+env DATABASE_URL='postgresql+asyncpg://pathreview:pathreview@localhost:5434/pathreview_dev' .venv/bin/python - <<'PY'
+import redis
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from api.routes.health import router
+from core.config import settings
+
+print("Redis PING:", redis.Redis.from_url(settings.redis_url).ping())
+print("redis_host defined:", hasattr(settings, "redis_host"))
+
+app = FastAPI()
+app.include_router(router)
+response = TestClient(app).get("/health")
+print("HTTP status:", response.status_code)
+print("Response:", response.json())
+PY
+Relevant output:
+Redis PING: True
+redis_host defined: False
+redis_health_check_failed error="'Settings' object has no attribute 'redis_host'"
+HTTP status: 503
+Response dependencies: postgres=unhealthy, redis=unhealthy, vector_db=healthy
+I expected the reachable Redis service to be reported healthy. The Redis probe instead fails before connecting because it reads settings.redis_host, while Settings defines redis_url.
+This run also logged a separate PostgreSQL failure: SQLAlchemy rejected the route’s raw "SELECT 1" query. The 503 response therefore has two causes in this run. The successful Redis PING, missing attribute check, and Redis error log are the evidence specific to #62.

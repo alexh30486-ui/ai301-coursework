@@ -1,121 +1,98 @@
 # Unit 1 — Issue Selection
 
-## Selected issue
+## Issue link
 
-**Selected issue:** #73 — README and `.env.example` disagree about which LLM API key to set
+**Selected issue:** [#73 — README and `.env.example` disagree about which LLM API key to set](https://github.com/codepath/pathreview-ai301-fa26-s1/issues/73)
 
-**Issue link:** https://github.com/codepath/pathreview-ai301-fa26-s1/issues/73
+**Verdict:** `accept`
 
-**Verdict:** Accept
+## Verdict output
 
-I selected issue #73 as my first contribution because it describes a concrete configuration/documentation mismatch involving two named files. The requested change has a bounded review surface and can be understood without requiring a large architectural change. The issue also includes an effort estimate, which makes the expected contribution size easier to assess.
+The live `issue-select` run graded #72, #69, and #73 independently and accepted all three. It ranked #72 and #69 ahead of #73 for my Python and testing fit. The #73 object below records the checks and verdict from that earlier live output. The complete three-issue JSON array was not saved in this repository; the separate `eval-run.txt` is the 20-package evaluator run, not this live issue verdict.
 
-I did not comment on or claim the issue during Unit 1. Selection is separate from claiming the issue. I will claim it in Unit 2 before beginning implementation.
+Issue URL: https://github.com/codepath/pathreview-ai301-fa26-s1/issues/73
 
-## Issue analysis
+```json
+{
+  "item": "https://github.com/codepath/pathreview-ai301-fa26-s1/issues/73",
+  "checks": [
+    {
+      "name": "Maintainer activity",
+      "grade": "pass",
+      "evidence": "Last 5 main commits authored by Aburke225, newest 2026-09-16T21:42Z"
+    },
+    {
+      "name": "Repository in use",
+      "grade": "pass",
+      "evidence": "archived=false, pushed_at 2026-09-16T21:48Z; no releases"
+    },
+    {
+      "name": "Bounded newcomer scope",
+      "grade": "pass",
+      "evidence": "COLLABORATOR-filed, labels bug/good first issue/docs/tier-1, names README.md and .env.example, 1-2h"
+    },
+    {
+      "name": "Available to claim",
+      "grade": "pass",
+      "evidence": "assignees [], zero comments, no linked or referenced PRs"
+    },
+    {
+      "name": "Contribution policy compatible",
+      "grade": "pass",
+      "evidence": "docs/CONTRIBUTING.md and PR template contain no AI restriction"
+    },
+    {
+      "name": "Maintainer responsiveness",
+      "grade": "unclear",
+      "evidence": "No maintainer comments in 8-issue sample; nothing to measure"
+    }
+  ],
+  "verdict": "accept"
+}
+```
 
-| Issue | Verdict | Analysis |
-|---|---|---|
-| #73 | Accept | The issue identifies a specific disagreement between the README and `.env.example`. It names the relevant files and provides a concrete problem to resolve. The requested work is bounded and has a small review surface. |
-| #72 | Accept | The issue concerns `verify_password` raising `UnknownHashError` for malformed stored hashes. It describes a concrete behavior problem, but the implementation touches authentication/password-handling behavior, so it has a more security-sensitive review surface than #73. |
-| #69 | Accept | The issue describes an output-parser crash when the fallback response is a top-level JSON array. It identifies a concrete parser behavior problem, but parser behavior is more implementation-sensitive than the documentation/configuration mismatch in #73. |
+## Issue analysis — `issue-19`
+
+For scored package `issue-19` (`zxcalc/zxlive#517`), my rubric returned **accept**, matching the gold label **accept**. The issue reports that selecting large subgraphs in proof mode freezes the UI, and it was filed by a collaborator. It identifies two possible causes in the matching and UI-update paths. The three further suggestions are presented as options within this same bug report, not as separately titled issues or independent deliverables. Under my **Bounded newcomer scope** rule, naming likely causes and related steps is direction, not proof of umbrella scope. The package also reports an active, unarchived repository and no assignee or linked PR. Those facts support the matching verdicts.
 
 ## Check rationale
 
-For issue #73, I evaluated the required checks from the issue-selection rubric.
+I focused on **Bounded newcomer scope**, a required check. The exact rubric says, “Grade the size of the work requested, never the polish of the writeup.” It also says, “When none of (a)-(f) holds and the issue names the behavior, files, or symptoms involved, pass.” The rule rejects umbrella or tracking work, explicitly codebase-wide or core-internal changes, support questions, unresolved design disagreements, repeatedly abandoned old work, and unsupported new feature requests.
 
-### Repository activity
+Issue #73 names one disagreement between `README.md` and `.env.example` and asks for one consistent account of the LLM API key. Two files can be part of one deliverable. A collaborator opened it, it had the `good first issue` and `docs` labels, and its estimate was 1–2 hours. No disqualifying scope condition appeared in the issue or thread at the time of the live check, so `pass` followed the written rule.
 
-The repository was verified as active and unarchived. This means the issue is in a repository that is currently being maintained rather than an archived repository.
-
-### Repository availability
-
-The issue was open, unassigned, and available to claim. I did not find an existing claimant.
-
-### Bounded newcomer scope
-
-The issue describes one identifiable deliverable: resolving the disagreement between the README and `.env.example` regarding the LLM API key. The relevant files are named in the issue, which makes the review surface clear.
-
-The rubric's bounded-scope check is:
-
-> "Pass when the issue describes one bounded deliverable that a newcomer could begin implementing from the information provided."
-
-Issue #73 meets that description. The fact that the change involves two files does not make it an umbrella issue because both files are part of the same configuration/documentation mismatch.
-
-### Existing claims
-
-The issue was open and unassigned when I checked it. I did not claim it during Unit 1.
-
-### Contribution-policy compatibility
-
-The live issue-selection check also considered whether the contribution was compatible with the repository's contribution policy. Issue #73 was compatible with the policy checks used by the skill.
+The other required checks supported `accept`: recent collaborator commits and a September 16 push showed activity in an unarchived repository; the issue had no assignee, comments, or linked or referenced PRs at that check; and the contribution guide and PR template imposed no AI restriction. Maintainer responsiveness remained `unclear` because the sampled issues had no maintainer comments. It was preferred, so it did not change the verdict. These are observations from the September 2026 live run, not a claim about the issue's present availability.
 
 ## Trade-offs
 
-I compared #73 with #72 and #69 rather than selecting an issue solely because it was the first candidate.
+**Issue choice:** #73 has a smaller documentation and configuration review surface than [#72](https://github.com/codepath/pathreview-ai301-fa26-s1/issues/72), which changes password-verification behavior, or [#69](https://github.com/codepath/pathreview-ai301-fa26-s1/issues/69), which changes parser fallback behavior. That choice gives up some Python implementation and testing practice. The skill ranked #72 first and #69 second for my technical fit; I still chose #73 as a bounded first contribution.
 
-Issue #72 involves password verification behavior and therefore has a more security-sensitive implementation surface. Issue #69 involves parser behavior and requires reasoning about fallback JSON handling. Issue #73 is narrower: the problem is a disagreement between two explicitly named configuration/documentation files.
+**Check trade-off:** The quoted **Bounded newcomer scope** rule deliberately accepts a named behavior and a single deliverable even when the issue description is brief. This avoids rejecting a reasonable starter issue merely because the report is short or touches two related files. It can miss hidden complexity: for example, a labeled docs mismatch might actually require changes across several providers or an unsettled configuration decision that the issue does not disclose. The rule only catches codebase-wide work or design disagreement when the body or thread provides that evidence. Its `pass` for #73 does not prove the fix will take exactly 1–2 hours.
 
-The trade-off is that #73 is primarily a documentation/configuration consistency change rather than a deeper code-behavior fix. I chose it because the first contribution benefits from a clearly bounded problem and a straightforward review surface.
+If I tightened this check after discovering such a miss, I would first rerun a canary that should still pass (`issue-19`, the maintainer-diagnosed bounded performance bug) and scope rejections that should stay rejected (`issue-05`, the umbrella issue, and `issue-20`, the underspecified feature wish). I would then rerun the full evaluation and compare all categories. This is a future validation plan, not a claim that I ran another evaluation after the final 20/20 result.
 
 ## Selection rationale
 
-I selected #73 because it is the clearest bounded first contribution among the three candidates I evaluated. The issue has a concrete problem statement, identifies the relevant files, and has an understandable expected outcome. The change can be reviewed by comparing the README and `.env.example` and confirming that they consistently describe the required API-key configuration.
+I selected #73 because the verdict correctly identified a live repository, a then-available issue, and a bounded deliverable. The relevant files and mismatch are explicit, so I could begin by checking the actual configuration in `core/config.py`, deciding which API key the application expects, and making the setup instructions consistent. I made the final choice myself even though the skill ranked the more code-focused #72 and #69 higher.
 
-This choice also keeps the first contribution separate from the more security-sensitive password behavior in #72 and the parser behavior in #69.
+**Claiming difficulty:** The issue was open and unassigned with no claim comments when I evaluated it, which made an initial claim straightforward. That could change between selection and posting. Path Review's classroom rule allows multiple students to claim the same issue, so another student's comment would not reserve it or block mine, but shared work could complicate coordination and review. Maintainer response time was also unmeasured. Before claiming I would recheck the thread, write a specific comment promising investigation rather than a fix or deadline, and keep any later report grounded in my own observed output. I did not claim #73 during Unit 1; issue selection and claiming were separate steps.
 
 ## Run history
 
-1. I filled `skill/rubric.md` with the required checks and verdict rule.
-
-2. I initially ran a smoke evaluation from the starter repository. The external evaluator stalled and that attempt was terminated.
-
-3. I installed the `issue-select` skill to `~/.claude/skills/issue-select/`, configured `scope.md` for `codepath/pathreview-ai301-fa26-s1`, and added the repository fit profile.
-
-4. I ran the live Claude issue-selection command against issues #73, #72, and #69. The initial attempt stalled before returning the expected result and was terminated.
-
-5. I verified the repository and issue state directly with GitHub. The repository was active and unarchived, and the three candidate issues were open, unassigned, and had no comments or linked pull requests at the time of that check.
-
-6. I revised the bounded-newcomer-scope rubric check to distinguish a single bounded deliverable from umbrella issues and to define explicit failure conditions.
-
-7. I ran a targeted evaluation of issues #01, #19, and #20 after the rubric revision. The result was:
-
-   `agreement: 3/3 scored items`
-
-8. I then ran the required full evaluation with 20 scored issues. The final result was:
-
-   `agreement: 20/20 scored items (bar: 18/20: PASS)`
-
-9. The final evaluation run was saved to `eval/eval-run.txt` and copied to the required assignment location:
-
-   `beat-1-sandbox/unit-1/eval-run.txt`
+1. I wrote the required checks and verdict rule in `skill/rubric.md`. An initial smoke evaluation stalled and was terminated, so I did not count it as a completed run.
+2. I installed the `issue-select` skill, configured `scope.md` for `codepath/pathreview-ai301-fa26-s1`, and set my fit profile. The first live attempt against #73, #72, and #69 also stalled and was terminated.
+3. I checked repository and issue activity directly, then refined **Bounded newcomer scope** to distinguish one deliverable across related files from an umbrella issue.
+4. The targeted evaluation of `issue-01`, `issue-19`, and `issue-20` matched **3/3** expected verdicts.
+5. The completed full evaluation matched **20/20** scored items, above the **18/20 PASS** bar. It matched claimed **4/4**, clear-accept **8/8**, dead-repo **3/3**, policy **1/1**, and scope **4/4**. The original harness output is in [`eval-run.txt`](eval-run.txt).
+6. A subsequent live run accepted #72, #69, and #73 and produced the #73 verdict recorded above. I chose #73 despite its third-place fit ranking. No claim or implementation was part of Unit 1.
 
 ## Final evaluation output
 
-The final full evaluation produced the following results:
+The saved 20-package evaluator run ends with:
 
 ```text
-issue-01 accept accept yes
-issue-02 reject reject yes
-issue-03 reject reject yes
-issue-04 accept accept yes
-issue-05 reject reject yes
-issue-06 accept accept yes
-issue-07 reject reject yes
-issue-08 reject reject yes
-issue-09 accept accept yes
-issue-10 reject reject yes
-issue-11 accept accept yes
-issue-12 reject reject yes
-issue-13 reject reject yes
-issue-14 accept accept yes
-issue-15 reject reject yes
-issue-16 accept accept yes
-issue-17 reject reject yes
-issue-18 reject reject yes
-issue-19 accept accept yes
-issue-20 reject reject yes
+categories: claimed 4/4  clear-accept 8/8  dead-repo 3/3  policy 1/1  scope 4/4
+agreement: 20/20 scored items  (bar: 18/20: PASS)
+```
 
-categories: claimed 4/4 clear-accept 8/8 dead-repo 3/3 policy 1/1 scope 4/4
-agreement: 20/20 scored items (bar: 18/20: PASS)
-run written to eval-run.txt
+This evaluator result measures the rubric against fixed bundles. The `Verdict output` section above records the separate live grading of the selected GitHub issue.

@@ -55,23 +55,28 @@ The focused route tests for reachable and unreachable Redis returned `2 passed, 
 
 ## Run history
 
-1. I installed the Unit 3 `plan-check` skill and filled its `rubric.md`, `references/evidence-guide.md`, and `procedure.md`; I carried forward and extended my Unit 2 voice guide. The installed copy is the one intended for live and eval grading.
-2. I manually reviewed `calib-01` through `calib-04` against the rubric, then compared my accept/reject calls with the four gold labels: all four matched. Calibration items are not scored in the 20-package run.
-3. After reading the scored-set convention guidance, I clarified in all three authored components that the Unit 3 eval treats every candidate package as AI-assisted. Explicit repo disclosure rules must therefore be applied to the candidate plan comment. This clarification was installed before any full Unit 3 eval.
-4. I attempted a live `plan-check` run on the #62 draft. Claude stopped after one second with `You've hit your individual spend limit`; no per-check grades or JSON verdict were produced. I manually checked the draft and posted the plan comment. I do not represent the manual check as a successful live skill run.
-5. **Full evaluation: pending.** No Unit 3 `eval-run.txt` has been generated. When credits become available, run the complete harness against this installed rubric and evidence guide, examine its disagreements and category floor, and copy only its harness-written complete `eval-run.txt` into this directory. Record the actual score and any subsequent changes here; never invent or hand-edit that run.
+1. I installed plan-check, filled the rubric, evidence guide, and procedure, and carried forward my voice guide.
+2. I manually graded the four calibration packages and matched all four gold labels. These were manual calibration results, not scored harness results.
+3. I clarified that every Unit 3 eval package is treated as AI-assisted and that explicit repository disclosure requirements must be enforced.
+4. My live plan-check attempt was blocked by the individual spend limit and produced no verdict. I manually reviewed and posted the plan; I do not claim that the live skill approved it before posting.
+5. The first full evaluation attempt errored on all 20 packages. A diagnostic revealed an expired OAuth session. No complete evaluation file was saved.
+6. After restoring authentication, the full harness returned 20/20 PASS and saved eval-run.txt. Categories matched: clear-accept 7/7, scope-creep 4/4, thread-convention 2/2, unbuildable 3/3, wrong-cause 4/4. No further revisions or evaluation reruns were needed.
 
 ## Package analysis
 
-The manual calibration item `calib-03` (bat #3831) earned gold `reject` and my manual `reject`: its proposed pager binding change cannot explain a 25.8-second run with no pager involved, while disabling highlighting cuts it to about 0.2 seconds. This is **calibration, not a scored package**. Replace this paragraph after the full evaluation with one scored `pkg-XX`, its gold verdict, the skill's actual verdict, and an evidence-based explanation of why the check reached that result.
+For scored package pkg-20, the gold verdict was reject and my skill returned reject. The plan was technically strong and followed the thread, but the repository explicitly required disclosure of AI assistance and the candidate comment omitted it. All Unit 3 evaluation packages are treated as AI-assisted, so the missing disclosure was a demonstrated policy violation.
 
 ## Check rationale
 
-The installed `diagnosis-grounded` rubric says: “Pass when the diagnosis explains the observed behavior without contradicting the supplied evidence. A hypothesis may pass when labeled uncertain and paired with a concrete check before the dependent implementation. Fail when the plan ignores decisive evidence or asserts a cause the evidence contradicts.” The `calib-03` no-pager timing is decisive counterevidence to its pager-binding diagnosis. After a full evaluation, connect this exact check or another verbatim quoted check from the uploaded rubric to one scored package's actual result. If the rubric changes, update the quotation to match the submitted file.
+The conventions check in my submitted rubric reads:
+
+> Pass when applicable explicit requirements are met, including AI disclosure only when required. Fail for a demonstrated violation or a prohibited contribution. Missing evidence of a required condition is unclear. Silence is not a disclosure requirement; polished prose is not evidence of AI authorship. A human-own-words rule alone does not prove a violation.
+
+This check explains pkg-20's rejection: a strong technical plan does not satisfy a separate, explicit disclosure requirement. The check also avoids inventing disclosure requirements for repositories whose policies are silent.
 
 ## Trade-offs
 
-This check prevents a confident but incorrect thread diagnosis from overruling a controlled reproduction. It can reject a useful exploratory plan if the cause is genuinely uncertain and the plan never states a concrete discriminating check. The rubric permits a labeled hypothesis with such a check. A future loosening should be tested against a scored wrong-cause package and a clear accept canary before a confirming full run; the final write-up will name the actual packages and results once the eval is available.
+This check can hold an otherwise buildable plan because its comment violates an explicit contribution policy. It does not infer authorship from polished writing. A limitation is that a frozen package may omit a policy; live mode therefore reads the actual contribution documents. I made no changes after the 20/20 run, so no canary rerun was needed. If I later loosen disclosure handling, pkg-20 would be a canary before a confirming full run.
 
 ## Plan deviations
 

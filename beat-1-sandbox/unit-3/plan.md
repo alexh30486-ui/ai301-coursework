@@ -27,3 +27,10 @@ Confirm that `redis.Redis.from_url` accepts the configured URL and `decode_respo
 ## Deviations from posted plan
 
 The build has not started. After implementation, record either “No deviations” with what was built or each change to the approach, why it was necessary, and any follow-up posted on the issue. Do not leave this section in its current state for final submission.
+
+## Unit 4 deviation: required suppression cleanup
+
+The PR template requires removing suppressions associated with a fixed seeded bug.
+I removed the health module's attr-defined suppression after fixing #62.
+The call-overload and index suppressions remain for separate findings.
+This adds configuration cleanup to the original plan without changing other health-check behavior.

@@ -1,219 +1,318 @@
-# Contribution: Fix the MCT001 code fix so it inserts `UseMauiCommunityToolkit()` before `Build()`, with a regression test (CommunityToolkit/Maui #879)
+# Contribution: Fix MCT001 code-fix placement before `Build()` and add regression coverage
 
 **Contribution Number:** 1
+
 **Student:** Alex Hernandez
+
 **GitHub Username:** alexh30486-ui
+
 **Issue:** https://github.com/CommunityToolkit/Maui/issues/879
+
 **Pull Request:** https://github.com/CommunityToolkit/Maui/pull/3343
 
-Fork: https://github.com/alexh30486-ui/Maui, branch `test/879-initialization-codefix`, final commit `915838870f6bb95cfc3993dbc895a8016ba34b9f` on top of `main` at `34bce1ad`.
+**Project:** .NET MAUI Community Toolkit; C#; Roslyn analyzer and code-fix tooling.
+
+**Fork and branch:** [alexh30486-ui/Maui](https://github.com/alexh30486-ui/Maui), `test/879-initialization-codefix`.
+
+**Final contribution commit:** [`915838870f6bb95cfc3993dbc895a8016ba34b9f`](https://github.com/alexh30486-ui/Maui/commit/915838870f6bb95cfc3993dbc895a8016ba34b9f).
+
+**Baseline parent:** [`34bce1ada154760353011e90699b1621542eb36b`](https://github.com/CommunityToolkit/Maui/commit/34bce1ada154760353011e90699b1621542eb36b).
+
+**Outcome:** merged October 10, 2026; merge commit [`f7f9f4488b168debb8db194895d40ddd7e345fd2`](https://github.com/CommunityToolkit/Maui/commit/f7f9f4488b168debb8db194895d40ddd7e345fd2).
+
+**Latest documentation and public-record review:** October 21, 2026.
+
+The original issue asked for tests for an initialization analyzer. The checkout already contained tests, so my investigation focused on what they actually verified. One new test applied the offered code fix and inspected the resulting source; it exposed that the fix placed `.UseMauiCommunityToolkit()` after `.Build()`. The submitted change corrected the selected syntax node and added that regression test: two files, 52 insertions, one deletion.
+
+This account separates three kinds of evidence. Public source, the final commit, the issue thread, and PR records can be inspected through the links below. Historical local test results and tool verdicts are summarized from the terminal records and saved reports supplied during the work; those local files are not included in the public course repository. Personal recollections that the public record does not establish, particularly my CLA reply, remain qualified. The October 21 documentation review did not rerun the contribution tests or readiness tools.
 
 ## Toolkit
 
-**Unit 5: Issue scout installed and run retrospectively on 2026-10-17; no scout run existed when #879 was selected**
-2026-10-17, one week after the Maui contribution was selected and merged on 2026-10-10; this run did not guide that selection, and the selection gap stands. I installed the scout under `~/.claude/skills/issue-scout`, restored my Python fit profile into `scope.md`, and tested the one `gh search issues` query in `search-strategy.md`: 100 results, five graded, three accepted, two rejected for open PRs saying "Closes #5". The accepted one-line issue "Review security concepts" (almadhlom/cyber-security-basics#869) exposed a bounded-scope loophole, so I added fail branch (g) to `rubric.md` requiring a named behavior, file, symptom, or concrete deliverable that author identity and starter labels cannot override. Direct grading of Canner/WrenAI#1202 and Clawdlinux/agentic-operator-core#132 under the patched rubric accepted both at moderate and low personal fit, and left unresolved that the scout read months-old claim comments as inactive without a defined cutoff (60-day rule proposed in `scan-notes.md`, not applied; records in `scan-output.md`).
+**Unit 5: Issue scout installed and evaluated retrospectively on 2026-10-17; it did not select the Maui contribution**
 
-**Unit 6: Voice guard stopped two comment drafts for claims without evidence, then passed the revised drafts**
-2026-10-10, 08:20 to 08:33 PDT. The guard (`~/.claude/voice-guard/check_voice.py`, log at `~/.claude/voice-guard/guard-log.md`) stopped my first issue-comment draft at 08:20 and a second at 08:30 with the same rule: "No conclusion without its artifact in the same comment." Both drafts said the defect was confirmed before showing a command or output. I moved the filtered test command, the before output (exit 2), and the after output (exit 0) above the claim. The comment draft passed at 08:31; the PR draft passed at 08:30 and again at 08:33. Two stops on `gh issue comment --help` and `gh pr create --help` at 08:20 were deliberate hook-wiring tests: the guard refuses bodyless forms by design.
+On October 17, after the October 10 contribution had already merged, I installed `issue-scout`, restored my Python fit profile, and tested a Python/`good first issue` query that returned 100 results. Claude graded the top five under the configured ranking: three accepted and two rejected because existing PRs already claimed to close them; acceptance of the vague issue “Review security concepts” exposed an owner/label exemption that allowed an absent deliverable to pass. I corrected the bounded-scope rule with branch (g), requiring the title, body, or thread to identify a behavior, file, symptom, or concrete deliverable regardless of author identity or starter label. Direct grading of WrenAI #1202 and agentic-operator-core #132 then accepted both at moderate and low personal fit, while leaving an availability ambiguity unresolved: old claim-shaped comments were treated as inactive without a defined cutoff, and a proposed 60-day rule was not implemented.
 
-2026-10-17, orientation. The same day I ran one read-only orientation agent scoped to the MCT001 analyzer, its code-fix provider, the `Verifiers/` helpers, and the initialization test class, a week after the PR merged; no orientation run existed before or during the contribution, and the earlier `CLAUDE.local.md` was hand-written inspection notes, not a tool run. The agent confirmed the mechanism the fix relied on: the analyzer reports the `UseMauiApp<T>()` invocation span and scans the whole method for the toolkit call, so the old `AncestorsAndSelf().Last()` selection appended after `Build()` yet still silenced the diagnostic. The existing analyzer-only tests did not inspect the edited source; the new code-fix regression test checks that output. The regression is tested in exactly one place, `VerifyCodeFixInitializesToolkitBeforeBuild`, through the `CSharpCodeFixVerifier` overload that passes the toolkit `Options` types. Findings saved to `evidence-879/20261017-orientation.md`; `~/maui-issue-879/CLAUDE.local.md` rewritten from them on the staff template (25 lines, still excluded via `.git/info/exclude`). Claude Code ran the agent and wrote both files.
+**Unit 6: Voice guard checked revised drafts; scoped repository memory was completed retrospectively on 2026-10-17**
 
-**Unit 7: Ship gate blocked stale before/after evidence after a commit amend, passed after recapture, then blocked a literal `~` path on the real `gh pr create`**
-2026-10-10, 08:33 to 08:44 PDT. The gate (`~/.claude/ship-gate/check_gate.py`, log at `~/.claude/ship-gate/gate-log.md`) ran four manifest checks sourced from CONTRIBUTING.md and `.github/workflows/dotnet-build.yml`, then my own pr-precheck in live mode. First manual pass at 08:33 was against commit `9a93b284`. I then amended to `91583887` to drop one blank line. The 08:36 run blocked: `regression-evidence [unclear]: Before/after evidence cites commit 9a93b284 and '53 insertions', but the branch commit is 91583887 with 52 insertions`. I recaptured the before and after runs against `91583887`, updated `test_evidence.md`, and the gate passed at 08:38 and 08:40 with all four manifest checks ok and all seven pr-precheck checks pass. At 08:44 the hook blocked `gh pr create` with `could not read the body file: [Errno 2] No such file or directory: '/Users/alexhernandezm/maui-issue-879/~/ai301-unit1-starter/...'` because the hook reads the literal argument before shell expansion. The absolute path passed, the hook honored the 08:40 manual pass, and the PR opened. The title file began with the literal text `PR Title: `, which I stripped before passing `--title`.
+The October 10 voice-guard records report stops on local drafts that asserted a result before showing evidence, followed by passes after commands and output were incorporated into revised drafts; bodyless `--help` requests also demonstrated that the hooks fired. The public issue comment was created at 06:45 PDT and edited at 08:38 PDT, so the later guard checks cannot be credited with protecting its original creation, and the current public prose does not establish that a guard-passed local draft was posted verbatim. On October 17, one read-only orientation agent examined the initialization analyzer, provider, verifier helpers, and test class, then distilled the findings into a 25-line, locally excluded `CLAUDE.local.md`. That orientation occurred after the contribution: it clarified the method-wide analyzer check and the code-fix coverage gap, but did not guide the original implementation.
 
-**Unit 8: PR-monitor run once, retrospectively, on 2026-10-21; it read MERGED and drafted a close-the-loop note I declined**
-2026-10-10, 15:11 PDT. One `gh pr view` snapshot of PR #3343 (state, reviews, checks) and one `gh api` read of the issue comments. That was an ordinary status fetch, not a monitor run; no monitor existed on my machine until 2026-10-21.
+**Unit 7: Ship gate checked the committed branch, rejected stale evidence, and caught a body-file path problem**
 
-2026-10-21, 15:39 and 15:51 PDT. I installed the unit-8 pr-monitor from the starter (`~/.claude/pr-monitor/monitor.py`, INSTALL.md three-command copy, no hook), filled `playbook.md` with my own rules (7-day first-response and 14-day stalled-review thresholds, one nudge maximum, never nudge merged or closed, no automatic close), ran the free `--state` canary at 15:39, then one full run at 15:51 from `~/maui-issue-879` on `test/879-initialization-codefix`. The monitor read: state MERGED, review decision APPROVED, opened 11 days ago, last activity 2026-10-12 (a lock event by github-actions[bot]), thread 2 reviews, checks "1 pending, 6 passing, 4 skipped" and mergeability UNKNOWN, which INSTALL.md says are leftovers on a merged PR. It chose the merged follow-up form and wrote `drafted-move.md`: a thank-you to TheCodeTraveler, a conditional line about closing #879, and one possible follow-up (the provider may add a duplicate `using CommunityToolkit.Maui;`, seen in code, not tested). It applied my "never nudge merged" and "merged needs no walk-away" rules and asked no question. Copies: `evidence-879/20261021-monitor/run-report.md`, `drafted-move.md`, `playbook-snapshot.md`; log block in `~/.claude/pr-monitor/monitor-log.md`. Limitations: the monitor could not see that #879 is already closed (closed 2026-10-10 16:42 UTC, completed), could not see CLA state, and did not notice the PR is locked, which makes any comment impossible. What I changed: nothing in the monitor or forms; the playbook is mine. Decision, 2026-10-21: I declined the draft. The PR is merged and locked and the issue is closed, so the note adds no necessary follow-up. Nothing was posted. Claude Code ran the install, the two runs, and the evidence copies; the drafting call was the monitor's own Sonnet call.
+On October 10, the ship gate ran four manifest checks derived from repository guidance and CI, then the existing PR precheck on the real branch. A commit amend made the earlier `9a93b284` evidence reference stale; the gate blocked, and Claude recaptured before/after output tied to `91583887` before later passes. The real PR-opening hook then rejected a body-file argument containing a literal `~` path; using an absolute path resolved the lookup, and the PR opened at 08:44 PDT. These local readiness verdicts helped expose problems in the submission package, while the later maintainer review and merge provided separate upstream decisions.
+
+**Unit 8: PR-monitor ran retrospectively on 2026-10-21; I declined its unnecessary follow-up draft**
+
+On October 21, I adopted a playbook with a seven-day first-response threshold, a fourteen-day stalled-review threshold, one nudge maximum, and no nudge for merged or closed PRs, then Claude ran a free state canary at 15:39 PDT and one full monitor run at 15:51 PDT. The monitor read MERGED and APPROVED, selected its merged-follow-up form, and drafted a thank-you, a conditional issue-closing line, and a possible duplicate-`using` follow-up. Additional API inspection showed the issue already closed and the PR locked, while `license/cla` remained queued; those details exposed limits in the monitor's context rather than a reason to reopen completed work. I declined the draft because it added no necessary follow-up, posted nothing, and left the monitor and forms unchanged.
 
 ## Why I Chose This Issue
 
-Issue #879 asks for unit tests for `UseCommunityToolkitInitializationAnalyzer`. It is labeled `enhancement` and `help wanted`. In January 2023 the maintainer (TheCodeTraveler) had replied on the issue inviting a PR with tests. The issue was still open and unclaimed when I looked.
+I chose [CommunityToolkit/Maui #879](https://github.com/CommunityToolkit/Maui/issues/879) because the maintainer had invited contributions, the test work looked bounded, and I wanted to try applying what I had learned in Python to a C# project. My earlier fit profile preferred a small Python bug or test/fixture correction with a clear reproduction and a narrow file surface; MAUI was a language and setup stretch, but the requested test work matched the kind of contribution I wanted to practice. I manually read the issue, contributing guidance, analyzer, provider, and existing tests. The issue's description was stale relative to the checkout: six tests already existed in the target class, but none applied the code fix. My [investigation and claim comment](https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6098129467) was created October 10 at 13:45:12 UTC and edited at 15:38:55 UTC; TheCodeTraveler's [“Sounds good. Go for it” reply](https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6099055335) arrived at 15:23:39 UTC and supported proceeding with the narrowed scope. That response is evidence of support during the work, not evidence that I knew in advance how quickly a maintainer would reply.
 
-Reasons that the evidence supports:
+The course Issue Selection site later showed #879 in my claimed issues alongside the two comparison candidates, confirming it was present on the course site; that listing does not establish when each claim was made. No scout run selected or graded #879 before I implemented it. My October 17 scout work was retrospective practice: [WrenAI #1202](https://github.com/Canner/WrenAI/issues/1202), an environment-variable and launcher toggle across several recommendation flows, received moderate fit, and [agentic-operator-core #132](https://github.com/Clawdlinux/agentic-operator-core/issues/132), a terminal-recording GIF task, received low fit. Their acceptance showed that passing required checks and matching my preferred work are different judgments. The broad search also admitted a vague owner-filed issue with a starter label, which led to the actual branch-(g) correction; the proposed claim-age cutoff was left unresolved because the scan had interpreted “current” without an explicit threshold. I am recording what the tool taught me after the contribution rather than claiming it made a selection decision it never made. The evidence map below was added using the guide supplied for the October 21 documentation review; it does not supply a missing original scout verdict.
 
-- **Bounded surface.** One analyzer, one code-fix provider, one xUnit test class. The repository's CI runs that test project as its own job, so I could mirror one job locally.
-- **Active maintainer.** TheCodeTraveler replied to my investigation comment the same day and later reviewed the PR.
-- **Clear contribution rules.** CONTRIBUTING.md documents the formatting command and the diagnostics to exclude. It states no AI-use ban and no disclosure requirement. I disclosed AI assistance anyway.
-- **A real gap under the stale request.** The issue said the analyzer was untested, but the current checkout already had analyzer tests. What was missing was any test of the code fix's output. That narrower gap turned out to hide a defect, which made the issue more valuable than it first looked. I describe that in the next section.
-
-My investigation and claim comment: https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6098129467 (2026-10-10 13:45 UTC). The maintainer replied at 15:23 UTC: "Thanks @alexh30486-ui! Sounds good. Go for it."
-
-I chose it because the maintainer invited contributions, the test work looked bounded, and I wanted to try applying what I'd learned in Python to a C# project.
+| Criterion family | Concrete evidence in this contribution | Limit of the inference |
+| --- | --- | --- |
+| Maintainer activity and response | TheCodeTraveler's dated issue reply and human APPROVED review, linked above and below | They establish a response to this work; one same-day response is not a repository-wide latency sample |
+| Repository use | The existing source/test projects and the public contribution build/sample/benchmark check records | The record does not establish how many downstream users run the merged change, and a release/adoption audit was not documented at selection time |
+| Newcomer scope | One named analyzer/provider/test surface, the observed generated-source mismatch, and the final two-file diff | The issue's old age and label do not prove the work was small; actual source inspection narrowed it |
+| Availability | The issue was described as unassigned in the supplied selection record, and the maintainer subsequently supported proceeding | No original scout availability audit is preserved; present-day issue state cannot prove what every competing claim looked like earlier |
+| Contribution and AI policy | Pinned contributing guidance, PR-template/checklist handling, actual PR AI disclosure, and human review | Silence in a file inspected is not a blanket audit of all linked policies; an `AGENTS.md` file alone would not override an explicit restriction |
 
 **Toolkit**
-- Tool: none recorded for selection. No scout or issue-select run existed for #879 when it was chosen on 2026-10-10. A retrospective issue-scout scan and direct grading were completed on 2026-10-17 (see Unit 5 above); they did not grade #879 and did not inform this selection.
-- What it produced: nothing for this selection. The selection reasons above come from manual reading of the issue thread, CONTRIBUTING.md, and the test project. The 2026-10-17 run produced `scan-output.md` and `scan-notes.md` for other candidates only.
-- Difficulties: the issue text was stale relative to the code, which a tool run against the issue alone would not have caught either.
-- What changed: the rubric gained scope branch (g) on 2026-10-17 as a result of the retrospective run. The earlier evidence gap is recorded rather than filled.
+
+- Tool: manual issue/source inspection for the original choice; retrospective `issue-scout` using my saved fit profile, query, ranking rules, and patched rubric on October 17.
+- What it produced: no original scout verdict for #879; a later 100-result scan, five detailed grades, two direct candidate grades, and dated scan notes. The historical output is summarized here because the local tool files are not submitted artifacts.
+- Difficulties: the old issue description did not describe current test coverage; a starter label and owner identity also proved too permissive for a vague candidate. My Python profile did not make every returned repository or task a good personal fit.
+- What changed: branch (g) now prevents author identity or labels from rescuing a request with no identifiable behavior or deliverable. I retained the historical grades, marked the cutoff idea proposed, and kept the original selection gap explicit.
 
 ## Understanding the Issue
 
 **Problem Description**
 
-The toolkit ships a Roslyn analyzer and a code fix for diagnostic MCT001. The analyzer detects a `MauiAppBuilder` chain that never calls `UseMauiCommunityToolkit()`. The code fix edits the source to add that call. Those are two different things, and they were tested differently.
+The toolkit supplies two related pieces of developer tooling. An **analyzer** inspects source and reports diagnostic MCT001 when it recognizes a `UseMauiApp` invocation without a toolkit-initialization call in the enclosing method. A **code-fix provider** offers an edit in response to that diagnostic. Detecting a missing call and inserting the call correctly are separate behaviors, so tests of the first do not automatically cover the second.
 
-On `main` at `34bce1ad` the analyzer test project had 16 passing tests: six in `UseCommunityToolkitInitializationAnalyzerTests`, five in the Camera analyzer class, and five in the MediaElement analyzer class. All six tests in this issue's class checked whether the diagnostic fired or stayed silent. None of them applied the code fix and compared the edited source to an expected result. So the question "does the fix produce correct code?" had no answer in the suite.
+The baseline analyzer test project passed 16 tests. The initialization class contained six: **one diagnostic-ID assertion and five analyzer-behavior tests**. The other ten were in the Camera and MediaElement analyzer classes. After my new test, the totals were 17 across the project and seven in the initialization class. Calling all six original tests “diagnostic behavior tests,” or all sixteen “tests for this analyzer,” would be inaccurate.
 
-My new test, `VerifyCodeFixInitializesToolkitBeforeBuild`, checked the code fix itself. It found that the fix put `.UseMauiCommunityToolkit()` after `.Build()`. The test caught this as a mismatch between the generated code and the expected code.
+| Existing initialization-class test | What it checks |
+| --- | --- |
+| `UseCommunityToolkitInitializationAnalyzerId` | Diagnostic identifier equals `MCT001` |
+| `VerifyNoErrorsWhenUseMauiCommunityToolkit` | An initialization call suppresses the diagnostic |
+| `VerifyNoErrorsWhenUseMauiCommunityToolkitHasAdditionalWhitespace` | Extra whitespace does not create a false diagnostic |
+| `VerifyErrorsWhenMissingUseMauiCommunityToolkit` | Missing initialization reports the expected diagnostic span |
+| `VerifyNoErrorsWhenUseMauiCommunityToolkitWrapInPreprocessorDirectives` | The supported conditional-compilation case does not report a diagnostic |
+| `VerifyErrorsWhenUseMauiCommunityToolkitIsCommentedOut` | An ordinary commented-out call does not count as initialization |
 
-Counts: 16 baseline tests across the project, six in the target class. After my new test, 17 across the project and seven in that class.
+The class already imported a `CSharpCodeFixVerifier` specialized with the analyzer and provider. However, the existing helper called `VerifyAnalyzerAsync`; merely mentioning a code-fix type in the verifier's generic arguments did not apply the fix in those tests. The added `VerifyCodeFixInitializesToolkitBeforeBuild` explicitly called `VerifyCodeFixAsync`, supplied expected fixed source, and exercised the edit.
 
-The published PR description says the generated code "does not compile." That is a source-based conclusion, not a compiled one. `src/CommunityToolkit.Maui/AppBuilderExtensions.shared.cs` line 26 declares `UseMauiCommunityToolkit(this MauiAppBuilder builder, ...)`, and no overload takes a `MauiApp` receiver. `Build()` returns `MauiApp`, so `.Build().UseMauiCommunityToolkit()` has no matching extension method. I did not separately compile that generated snippet.
+The distinction matters because the analyzer's current implementation checks the enclosing method for a matching call name. A wrongly placed `.UseMauiCommunityToolkit()` can therefore make MCT001 disappear without making the edited program correct. The new test examines the resulting source instead of relying only on disappearance of the original diagnostic. This contribution did not change or comprehensively validate the analyzer's method-wide, syntax-based detection.
 
 **Expected Behavior**
 
-For the common fluent chain
+A typical MAUI startup method constructs a builder, configures it, and then builds an application:
 
 ```csharp
-MauiApp.CreateBuilder()
+return MauiApp.CreateBuilder()
     .UseMauiApp<Microsoft.Maui.Controls.Application>()
-    .Build()
+    .Build();
 ```
 
-the fix should insert the toolkit call on the builder, before `Build()`:
+When MCT001 offers to add toolkit initialization, the result should configure the builder before producing the application:
 
 ```csharp
-MauiApp.CreateBuilder().UseMauiApp<Microsoft.Maui.Controls.Application>().UseMauiCommunityToolkit().Build();
+return MauiApp.CreateBuilder()
+    .UseMauiApp<Microsoft.Maui.Controls.Application>()
+    .UseMauiCommunityToolkit()
+    .Build();
 ```
 
-`Build()` turns the `MauiAppBuilder` into a `MauiApp`. `UseMauiCommunityToolkit()` is an extension on the builder, so it has to come first.
+The fix also adds `using CommunityToolkit.Maui;` to the compilation unit. The test expects that import and checks the normalized complete fixed source, not just the presence of the method name.
+
+| Point in the chain | Role relevant to this bug |
+| --- | --- |
+| `MauiApp.CreateBuilder()` | Produces the builder to configure |
+| `.UseMauiApp<Application>()` | Configures that builder; this invocation is the diagnostic's selected span |
+| `.UseMauiCommunityToolkit()` | Extension method declared with a `MauiAppBuilder` receiver |
+| `.Build()` | Produces the `MauiApp`; builder configuration belongs before it |
 
 **Current Behavior**
 
-Before the fix, the provider generated
+Before my change, applying the provider to the same input generated:
 
 ```csharp
-MauiApp.CreateBuilder().UseMauiApp<Microsoft.Maui.Controls.Application>().Build().UseMauiCommunityToolkit();
+return MauiApp.CreateBuilder()
+    .UseMauiApp<Microsoft.Maui.Controls.Application>()
+    .Build()
+    .UseMauiCommunityToolkit();
 ```
 
-The regression verifier reported a generated-source mismatch against the expected text. I did not separately compile or run that output, and I did not reproduce it in an IDE; the evidence is the test harness diff shown under Reproduction Process.
+The regression verifier reported that this generated source differed from the expected fixed source. That mismatch is the directly observed failure. The [extension declaration at the contribution commit](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/src/CommunityToolkit.Maui/AppBuilderExtensions.shared.cs) takes `this MauiAppBuilder builder`, whereas `Build()` returns `MauiApp`; the receiver mismatch supports the PR description's compilation conclusion. I did not separately compile or run the generated snippet in a standalone application, and I did not verify the lightbulb action interactively in an IDE. I keep those limits explicit rather than presenting source reasoning as a separate compilation experiment.
+
+“Current Behavior” here describes the pre-fix behavior being addressed. The PR is now merged; it is not a claim that the project's latest code still contains this particular placement defect.
 
 **Affected Components**
 
-- `src/CommunityToolkit.Maui.Analyzers/UseCommunityToolkitInitializationAnalyzer.cs`: emits MCT001. Not changed.
-- `src/CommunityToolkit.Maui.Analyzers.CodeFixes/UseCommunityToolkitInitializationAnalyzerCodeFixProvider.cs`: selects the invocation to edit. Changed, one line.
-- `src/CommunityToolkit.Maui.Analyzers.UnitTests/UseCommunityToolkitInitializationAnalyzerTests.cs`: six analyzer tests, now plus one code-fix test.
+| Component at the final contribution commit | Responsibility | Changed? |
+| --- | --- | --- |
+| [`UseCommunityToolkitInitializationAnalyzer.cs`](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/src/CommunityToolkit.Maui.Analyzers/UseCommunityToolkitInitializationAnalyzer.cs) | Recognizes the invocation, checks the enclosing method, and reports the diagnostic location | No |
+| [`UseCommunityToolkitInitializationAnalyzerCodeFixProvider.cs`](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/src/CommunityToolkit.Maui.Analyzers.CodeFixes/UseCommunityToolkitInitializationAnalyzerCodeFixProvider.cs) | Chooses the invocation and constructs the edited document | One line replaced |
+| [`UseCommunityToolkitInitializationAnalyzerTests.cs`](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/src/CommunityToolkit.Maui.Analyzers.UnitTests/UseCommunityToolkitInitializationAnalyzerTests.cs) | Existing ID/behavior tests plus the new code-fix regression | 51 lines added |
+| Test project's `Verifiers/` helpers | Build the Roslyn test with input, diagnostics, references, and expected fixed code | No |
+| `AppBuilderExtensions.shared.cs` | Declares the toolkit initialization extension and its receiver | No |
 
 **Toolkit**
-- Tool: ChatGPT, for reading the provider and explaining what `AncestorsAndSelf().OfType<InvocationExpressionSyntax>().Last()` selects.
-- What it produced: the explanation that `.Last()` returns the outermost invocation, and a first proposed correction (swap to `.First()`).
-- Difficulties: that first proposal did not fix the test (see Solution Approach).
-- What changed: I stopped reasoning about position in the ancestor list and looked at what the diagnostic itself reports.
+
+- Tool: ChatGPT-assisted source reading, followed by the actual regression test and later source verification against the final commit.
+- What it produced: an explanation of the nested invocation chain and the distinction between detection and editing, plus two proposed target-selection changes.
+- Difficulties: the first proposed `.First()` change did not satisfy the test; early wording also blurred ID tests, analyzer tests, and code-fix tests.
+- What changed: the implementation uses the diagnostic's complete span, and this account now distinguishes the one ID assertion, five behavior tests, and one added edit test precisely.
 
 ## Reproduction Process
 
 **Environment Setup**
 
-macOS, .NET SDK 10.0.401, test target net10.0, x64 test host. The saved environment record (`evidence-879/environment.txt`, 2026-10-10 08:11 PDT) shows `ProductVersion: 26.6` and the baseline commit `34bce1ad`. I do not claim a CPU architecture; the x64 SDK path says nothing about the physical chip.
+| Item | Recorded value or evidence boundary |
+| --- | --- |
+| Operating system | macOS; the supplied environment record reports version 26.6 |
+| .NET SDK | 10.0.401 |
+| SDK executable used | `/usr/local/share/dotnet/x64/dotnet` |
+| Test target / host | `net10.0` / x64 test host |
+| Hardware architecture | Not established by the SDK path; no ARM64 claim |
+| Test framework | xUnit v3; the project references `xunit.v3` 4.0.0 |
+| Roslyn testing packages | Analyzer/code-fix testing packages 1.1.4 in the project |
+| Baseline / corrected commit | `34bce1ad` / `91583887` |
+| Required local setup encountered | .NET SDK and referenced-project workloads; `maui` and `android` installation resolved the observed workload error |
 
-Setup barriers and corrections, from my terminal session (no separate install log was saved):
+I initially could not invoke `dotnet` because it was absent from PATH. I found the installed executable at the path above and checked the SDK version. The first test-project build then stopped with `NETSDK1147`, requesting Android workloads. Installing the MAUI/Android workloads resolved that barrier and allowed the baseline suite to run with 16 passing tests. The terminal transcript records those steps, but I did not preserve a separate installation log. The workload requirement arose while building this project's references; it does not establish that every standalone analyzer or every project in every MAUI repository needs Android workloads.
 
-1. `dotnet` was not on PATH. I located the SDK at `/usr/local/share/dotnet/x64/dotnet` and used that full path in every command.
-2. `dotnet --version` reported 10.0.401.
-3. The first build failed with NETSDK1147 because the Android workloads required by the solution were missing.
-4. Installing the `maui` and `android` workloads resolved that error.
-5. The existing analyzer test project then built and ran: 16 passed.
-
-CONTRIBUTING.md lists the .NET SDK and the MAUI workloads as prerequisites, so steps 3 and 4 match the documented setup. I just had not done it yet.
+The [contributing guide pinned to the contribution commit](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/CONTRIBUTING.md) lists the .NET SDK and MAUI workloads as prerequisites. The test project references toolkit, Camera, and MediaElement projects, which explains why the test surface involves more than the provider's own source file.
 
 **Steps to Reproduce**
 
-1. Baseline: clone `CommunityToolkit/Maui`, check out `main` at `34bce1ad`, and run the analyzer test project. Result: 16 passed.
-2. Add `VerifyCodeFixInitializesToolkitBeforeBuild` to `UseCommunityToolkitInitializationAnalyzerTests.cs`. It marks the `CreateBuilder().UseMauiApp<...>()` span as the diagnostic location and expects `.UseMauiCommunityToolkit().Build()` in the fixed source.
-3. Run the filtered test with the original provider (exact saved invocation):
+1. Work from the pinned repository revision, not an unspecified latest `main`. The original baseline was `34bce1ad`, and the final test is inspectable in `91583887`.
+2. Confirm that the original suite passes: the recorded baseline result was 16 tests passed. A passing baseline does not show that the offered code fix works, because no baseline test applied it.
+3. Add the new test while leaving the provider at its baseline implementation. Its input marks the `CreateBuilder().UseMauiApp<...>()` invocation as diagnostic location 0 and leaves `.Build()` outside the marker.
+4. Run the regression. The saved filtered command was:
 
-   ```
-   /usr/local/share/dotnet/x64/dotnet test --project src/CommunityToolkit.Maui.Analyzers.UnitTests/CommunityToolkit.Maui.Analyzers.UnitTests.csproj -- --filter "FullyQualifiedName~VerifyCodeFixInitializesToolkitBeforeBuild"
+   ```bash
+   /usr/local/share/dotnet/x64/dotnet test \
+     --project src/CommunityToolkit.Maui.Analyzers.UnitTests/CommunityToolkit.Maui.Analyzers.UnitTests.csproj \
+     -- --filter "FullyQualifiedName~VerifyCodeFixInitializesToolkitBeforeBuild"
    ```
 
-   Observed failure, exit code 2:
+5. Inspect the generated-source difference, not just the nonzero exit code. The recorded failure was:
 
-   ```
-   failed CommunityToolkit.Maui.Analyzers.UnitTests.UseCommunityToolkitInitializationAnalyzerTests.VerifyCodeFixInitializesToolkitBeforeBuild
-     Xunit.MicrosoftTestingPlatform.XunitException: System.InvalidOperationException : Context: Iterative code fix application
-     content of '/0/Test0.cs' did not match. Diff shown with expected as baseline:
-     -            return MauiApp.CreateBuilder().UseMauiApp<Microsoft.Maui.Controls.Application>().UseMauiCommunityToolkit().Build();
-     +            return MauiApp.CreateBuilder().UseMauiApp<Microsoft.Maui.Controls.Application>().Build().UseMauiCommunityToolkit();
+   ```text
+   failed ...UseCommunityToolkitInitializationAnalyzerTests.VerifyCodeFixInitializesToolkitBeforeBuild
+   Context: Iterative code fix application
+   content of '/0/Test0.cs' did not match. Diff shown with expected as baseline:
+   - return MauiApp.CreateBuilder().UseMauiApp<Microsoft.Maui.Controls.Application>().UseMauiCommunityToolkit().Build();
+   + return MauiApp.CreateBuilder().UseMauiApp<Microsoft.Maui.Controls.Application>().Build().UseMauiCommunityToolkit();
+
    Test run summary: Failed!
      total: 1
      failed: 1
+   Exit code: 2
    ```
 
-4. After comparison: with the corrected provider, the same command exits 0 with `total: 1, failed: 0, succeeded: 1`.
+6. Restore the corrected provider from `91583887` and rerun the same filtered test. The saved after result was exit 0, one succeeded, zero failed. Run the full project as a separate regression check; the recorded corrected-suite result was 17 passed.
+
+The original complete before-run transcript was saved after the first investigation plan had already said it was missing. The later recapture fills that evidence gap; it does not mean the transcript existed when the plan was first written.
+
+For a reader reconstructing the comparison now, the following is a **newly documented recipe**, not a claim of a newly executed run. Run it from a clone containing the contribution commit after setting up the documented SDK/workloads; it creates a separate worktree with the new test and restores only the old provider into that worktree:
+
+```bash
+contribution_sha=915838870f6bb95cfc3993dbc895a8016ba34b9f
+provider_path=src/CommunityToolkit.Maui.Analyzers.CodeFixes/UseCommunityToolkitInitializationAnalyzerCodeFixProvider.cs
+test_project=src/CommunityToolkit.Maui.Analyzers.UnitTests/CommunityToolkit.Maui.Analyzers.UnitTests.csproj
+comparison_root="$(mktemp -d)"
+
+git worktree add --detach "$comparison_root/before" "$contribution_sha"
+git show "${contribution_sha}^:${provider_path}" \
+  > "$comparison_root/before/$provider_path"
+
+# Before: new regression test with the original provider.
+/usr/local/share/dotnet/x64/dotnet test \
+  --project "$comparison_root/before/$test_project" \
+  -- --filter "FullyQualifiedName~VerifyCodeFixInitializesToolkitBeforeBuild"
+
+# After: restore the submitted provider in the same comparison worktree.
+git -C "$comparison_root/before" restore --source="$contribution_sha" -- "$provider_path"
+/usr/local/share/dotnet/x64/dotnet test \
+  --project "$comparison_root/before/$test_project" \
+  -- --filter "FullyQualifiedName~VerifyCodeFixInitializesToolkitBeforeBuild"
+
+git worktree remove --force "$comparison_root/before"
+rmdir "$comparison_root"
+```
+
+A later reproduction attempt on October 17 stopped before the tests ran: package restore raised `NU1902` and `NU1903` for `System.Security.Cryptography.Pkcs` 9.0.6, treated as errors. That attempt is a dependency/setup failure, not a second observation of the code-fix defect. It neither replaces the October 10 before/after results nor proves that the regression disappeared. I did not change dependencies or suppress those warnings as part of this contribution. A reader encountering that failure should record it separately rather than label any nonzero test command a successful reproduction.
 
 **Reproduction Evidence**
-- **Commit showing reproduction:** the test in commit `91583887`, run against the provider file checked out from `main` (`git checkout main -- <provider file>`), then restored with `git checkout HEAD -- <provider file>`. Working tree was clean afterwards.
-- **Screenshots/logs:** `beat-2-contribution/evidence-879/20261010-082958-regression/before-run-debug-filtered-91583887.txt` (the failure above) and `after-run-debug-filtered-91583887.txt` (the pass). The earlier pair captured against `9a93b284` is kept beside them with identical results. The full before-run log was captured after my investigation plan was first written, so the plan's note that it was "not yet saved separately" is out of date.
-- **My findings:** the new test reproduced the defect on the first run. The failure is a pure source-text mismatch from the Roslyn test harness, driven by the real analyzer and real code fix with no mocks.
+
+- **Commit showing reproduction:** [the final commit in my fork](https://github.com/alexh30486-ui/Maui/commit/915838870f6bb95cfc3993dbc895a8016ba34b9f), which contains the regression test and correction together. The failing comparison used that test with the baseline provider restored temporarily; the fixed commit alone is not a committed failing state.
+- **Screenshots/logs:** no screenshot is needed to understand the source difference because the before excerpt appears above and in the public PR. Historical local files are `before-run-debug-filtered-91583887.txt`, `after-run-debug-filtered-91583887.txt`, and `full-suite-debug-91583887.txt` under `evidence-879/20261010-082958-regression/`. They remain local provenance references, not clickable files promised to a grader.
+- **My findings:** the new test applied the actual provider through the existing Roslyn verifier and found the wrong placement. The after run changed the observable result from a fixed-source mismatch to a pass. This establishes the exercised edit behavior, not every possible fluent chain or an interactive IDE integration.
 
 **Toolkit**
-- Tool: Claude Code, running the before and after commands and saving the transcripts.
-- What it produced: the two filtered-run logs and a full-suite Debug log, each named with the commit they were run against.
-- Difficulties: the first capture was against `9a93b284`; after the amend the ship gate rejected it as not tied to the committed tree.
-- What changed: I recaptured against `91583887` and put the commit sha in the file names so provenance is visible.
+
+- Tool: Claude Code ran the recorded before/after commands and saved transcripts; ChatGPT helped draft the test and interpretation.
+- What it produced: the failure difference, passing filtered result, full Debug result, and commit-qualified evidence filenames summarized above.
+- Difficulties: an early evidence pair named the superseded commit; the first plan also predated preservation of the complete before log. The later October 17 attempt was blocked during dependency restore.
+- What changed: evidence was recaptured against the final revision, and this account distinguishes the original diagnostic experiment from a later environment failure.
 
 ## Solution Approach
 
 **Analysis**
 
-The provider found its target like this:
+`RegisterCodeFixesAsync` receives the diagnostic and its `Location.SourceSpan`. The original provider used only the span's start to locate a token, walked outward through its ancestors, filtered for invocation expressions, and chose the last one:
 
 ```csharp
 root?.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf()
     .OfType<InvocationExpressionSyntax>().Last()
 ```
 
-`AncestorsAndSelf()` walks outward from the diagnosed token toward the root, so `.Last()` is the outermost invocation. In `CreateBuilder().UseMauiApp<App>().Build()` that is `Build()`. The analyzer had reported MCT001 on the inner `CreateBuilder().UseMauiApp<App>()` span, but the provider ignored the span and guessed from the chain shape.
+In the reproduced expression, the first token is part of `MauiApp.CreateBuilder()`, nested inside `UseMauiApp<...>()`, nested inside `Build()`. The analyzer reports the `UseMauiApp` invocation's span, but the old selection walks beyond that boundary and chooses `Build()`. `AddUseCommunityToolkit` then wraps the chosen invocation with a new `.UseMauiCommunityToolkit()` call, so choosing `Build()` puts initialization after it. The defect is the target selection; the append operation follows the target it was given.
+
+ChatGPT first suggested `.First()` instead of `.Last()`. That proposal still failed the regression. An endpoint of the ancestor sequence is not the same guarantee as selecting the node whose full span the analyzer reported; the failed proposal was discarded rather than accepted because it looked like a small change. The observations here do not imply ancestor traversal is always wrong in Roslyn code; they explain why this provider's selection rule did not match its diagnostic contract.
 
 **Proposed Solution**
 
-Select the node at the diagnostic's own span:
+Use the full diagnostic span to request the corresponding syntax node, prefer the innermost node if spans tie, and retain the expected invocation type and existing failure behavior:
 
-```csharp
-root?.FindNode(diagnosticSpan, getInnermostNodeForTie: true) as InvocationExpressionSyntax
+```diff
+- var declaration = root?.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().Last() ?? throw new InvalidOperationException();
++ var declaration = root?.FindNode(diagnosticSpan, getInnermostNodeForTie: true) as InvocationExpressionSyntax ?? throw new InvalidOperationException();
 ```
 
-The fixer then edits exactly the invocation the analyzer reported. Scope stays at that one line plus one test. Analyzer detection, the Camera and MediaElement providers, samples, docs, and solution-wide formatting are out of scope.
+This leaves the code-action registration and document-edit routine unchanged. The selected `UseMauiApp` invocation is replaced by a toolkit-initialized invocation; its enclosing `.Build()` remains outside that replacement. The resulting builder call therefore appears before the terminal application-building call in the exercised expression.
+
+The change deliberately does not redesign analyzer detection, alter other providers, deduplicate imports, change public APIs, or reformat the solution. The later orientation noticed possible duplicate-import behavior and a diagnostic-category inconsistency, but neither was implemented or tested in this PR. They are observations outside this contribution, not additional resolved bugs.
 
 **Implementation Plan**
 
-1. Add `VerifyCodeFixInitializesToolkitBeforeBuild` for the `.Build()` chain.
-2. Replace the ancestor-list selection with span-based selection in the provider.
-3. Observable checks: filtered test before and after; full analyzer project in Debug and Release.
-4. Readiness checks: changed-file `dotnet format --verify-no-changes`, Release build of the CodeFixes project, voice guard on outgoing text, ship gate on the full PR package.
+1. Inspect the current tests instead of implementing the issue's old description literally.
+2. Add one code-fix regression to the existing initialization test class, with a diagnostic marker and explicit expected fixed source.
+3. Obtain a failure with the old provider, then correct its target selection.
+4. Compare the same regression before and after, and run the complete analyzer project in Debug and Release.
+5. Run the chosen repository-derived format/build checks, review outgoing text with the guard, and pass the branch through the gate before opening the PR.
 
-Scope change: the issue asked for analyzer tests; the checkout already had them. I posted the narrowing on the issue and the maintainer replied "Go for it." The plan is saved at `beat-2-contribution/drafts-879/plan.md`.
+The test has several purposeful details. Its marker `{|#0:...|}` identifies the complete diagnosed invocation without including `.Build()`. `Diagnostic().WithLocation(0).WithSeverity(DiagnosticSeverity.Error)` checks the diagnostic expected at that marker. `VerifyCodeFixAsync` receives both source versions and references to `typeof(Options)` and `typeof(Core.Options)`, following the project's verifier conventions. The expected source includes the added namespace import. Parsing it and calling `NormalizeWhitespace()` aligns the expected formatting with the provider's existing normalization, so the comparison does not fail merely because the multiline literal and generated document use different whitespace.
 
-Unsuccessful attempt: ChatGPT's first suggestion was to replace `.Last()` with `.First()`. I tried it. The filtered test still failed. The problem was never which end of the ancestor list to take; the ancestor list is the wrong source of truth. Span-based selection fixed it.
+The plan changed in three material ways: the requested “untested analyzer” became a code-fix coverage gap; the test demonstrated a behavior defect requiring one provider edit as well as tests; and the `.First()` proposal was replaced after it failed. I described the narrowed work on the issue, received the maintainer's “Go for it,” and kept the final diff to the provider and regression class. The local `drafts-879/plan.md` is a historical planning record, not an additional submitted artifact.
 
 **Toolkit**
-- Tool: ChatGPT for the analysis and the two candidate corrections; plan-check rubric from unit 3 as the structure for `plan.md`.
-- What it produced: the `.First()` suggestion (failed) and the `FindNode` suggestion (worked).
-- Difficulties: the first suggestion was confidently wrong, and I only caught it because the test was already in place.
-- What changed: I now require a failing test before accepting any proposed one-line fix.
+
+- Tool: ChatGPT for proposed explanations and changes; the Unit 3 plan-check rubric as a planning structure; Claude Code for execution and record keeping.
+- What it produced: the failing regression, rejected `.First()` candidate, successful span-based candidate, and bounded implementation plan.
+- Difficulties: an AI suggestion sounded plausible while failing the actual test; the original issue wording also did not match the current checkout.
+- What changed: the test result governed the implementation decision. No separate successful live `plan-check` invocation is established by these records, so using its structure is not reported as a passed tool run.
 
 ## Testing Strategy
 
-Before and after, same test, exit codes recorded:
+The central question was observable: **when the real provider handles MCT001 on a chain ending in `Build()`, does the resulting source place initialization on the builder?** The before test had to fail for that placement mismatch, and the after test had to pass with the same expected source. The full project then checked that existing ID and analyzer cases still passed.
 
-| Run | Provider | Result | Log |
+| Check | Recorded outcome | What it supports | What it does not establish |
 | --- | --- | --- | --- |
-| Filtered regression, Debug | from `main` | exit 2, 1 failed | `evidence-879/20261010-082958-regression/before-run-debug-filtered-91583887.txt` |
-| Filtered regression, Debug | commit `91583887` | exit 0, 1 passed | `.../after-run-debug-filtered-91583887.txt` |
-| Full analyzer project, Debug | commit `91583887` | 17 passed, 0 failed | `.../full-suite-debug-91583887.txt` |
-| Full analyzer project, Release | commit `91583887` | 17 passed, 0 failed, 0 skipped | `evidence-879/20261010-082206/check-4.txt`, rerun by the gate at 08:38 and 08:40 |
+| Baseline analyzer project | 16 passed | Original suite was green before the added regression | Original code-fix output was correct |
+| New filtered test, baseline provider | Exit 2; one failed; expected/actual order differs | The added test detects the exercised placement defect | Independent compilation or IDE behavior |
+| Same filtered test, corrected provider | Exit 0; one passed | Submitted selection fixes this regression | Every possible invocation shape |
+| Full project, Debug | 17 passed | Existing tests plus new regression pass together | Complete repository or platform coverage |
+| Full project, Release | 17 passed, zero failed, zero skipped in the saved reports | Release configuration was also exercised | That every cited early log used the final commit |
+| Provider formatting verification | Exit 0 | Chosen provider formatting check passed | Full-solution formatting |
+| Test formatting verification | Exit 0 with workspace-load warning | Chosen test-file formatting check completed successfully | Absence of workspace warnings |
+| Release CodeFixes project build | Zero warnings, zero errors | Changed provider project builds in Release | Interactive lightbulb registration |
+| `git diff --check` | Passed in the supplied record | No reported whitespace errors in that diff | Functional correctness |
 
-Full project command:
+The full-project Debug command was:
 
+```bash
+/usr/local/share/dotnet/x64/dotnet test \
+  --project src/CommunityToolkit.Maui.Analyzers.UnitTests/CommunityToolkit.Maui.Analyzers.UnitTests.csproj
 ```
-/usr/local/share/dotnet/x64/dotnet test --project \
-  src/CommunityToolkit.Maui.Analyzers.UnitTests/CommunityToolkit.Maui.Analyzers.UnitTests.csproj
-```
 
-Release output:
+Release uses the same project with `-c Release`. The summarized Release result was:
 
-```
+```text
 Test run summary: Passed!
   total: 17
   failed: 0
@@ -221,131 +320,182 @@ Test run summary: Passed!
   skipped: 0
 ```
 
-The 17 is the 16 pre-existing tests plus the new one. The target class went from six tests to seven.
+The early Release report in `evidence-879/20261010-082206/check-4.txt` predates the final commit. It supports that earlier run, not final-commit provenance by itself. The supplied gate reports state that the four checks were rerun after the amend and passed at approximately 08:38 and 08:40 PDT; the final-commit filtered and full-Debug files explicitly name `91583887`. I retain those distinctions rather than relabeling the early log as a run against a commit that did not yet exist.
 
-Repository checks, from the ship manifest (`~/maui-issue-879/ship-manifest.md`). Commands were sourced from CONTRIBUTING.md (formatting) and `.github/workflows/dotnet-build.yml` (build and test); I added none of my own.
+The manifest's check types came from the pinned contributing guide and [CI workflow](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/.github/workflows/dotnet-build.yml). I chose a narrower local scope: provider formatting, test-file formatting, Release provider build, and the analyzer test project. That was a contributor judgment, not a claim that CI required exactly these four local commands or that the local test command reproduced CI's reporting and coverage flags. The analyzer tests run as a step within the library-build workflow; they are not a separate dedicated CI job as an earlier description implied.
 
-| Check | Command | Result |
-| --- | --- | --- |
-| Provider formatting | `dotnet format <CodeFixes csproj> --verify-no-changes --include <provider file> --exclude-diagnostics CS0612 CS0618 CS0672 CS1062 CS1064` | exit 0, no output |
-| Test-file formatting | same, `--include <test file>` | exit 0, printed "Warnings were encountered while loading the workspace." |
-| Release CodeFixes build | `dotnet build src/CommunityToolkit.Maui.Analyzers.CodeFixes/CommunityToolkit.Maui.Analyzers.CodeFixes.csproj -c Release` | 0 warnings, 0 errors |
-| Analyzer tests | Debug and Release, above | 17 passed |
-| `git diff --check` | on the branch | passed (recorded in `investigation-plan-879.md`) |
+The source-documented formatting command is:
 
-Warnings that appeared and are not failures: the workspace-load warning during test-file formatting, and two pre-existing warnings from `src/CommunityToolkit.Maui.Camera/CameraManager.shared.cs` (CS9113, CS0649) during every test build, before and after the change. Neither file is touched by this PR.
+```bash
+dotnet format samples/CommunityToolkit.Maui.Sample.slnx \
+  --exclude-diagnostics CS0612 CS0618 CS0672 CS1062 CS1064
+```
 
-Exclusions, all disclosed in the PR:
+For local changed-file checks, the recorded form adds `--verify-no-changes` and `--include` to the appropriate project invocation. The original story used placeholders for those full formatting commands; the precise historical arguments belong to the local manifest/transcripts, so I do not reconstruct new command strings and call them verbatim old evidence. Excluding the compiler diagnostics follows the guide's stated concern about formatter-applied obsolete attributes. The test-file check emitted a workspace-load warning but exited zero; two Camera-project warnings, CS9113 and CS0649, also appeared in the supplied before/after build records and were outside the changed files.
 
-- No interactive IDE verification of the code fix.
-- No complete local platform matrix.
-- No other component suites or benchmarks locally.
-- Full-solution `dotnet format` excluded because the documented command rewrites tracked files across the solution; changed-file verification gated this change instead.
+Limitations and deliberate exclusions:
+
+- I did not test the fix inside Visual Studio or VS Code.
+- I did not separately compile a generated sample application.
+- I did not run all component suites, benchmarks, or the full platform matrix locally.
+- I verified the selected changed files instead of performing the full-solution formatting check locally. `--verify-no-changes` can avoid rewriting files, so rewriting is not an inherent reason that the broader check was impossible; the actual limitation is the narrower check scope I chose.
+- I added one chained-`Build()` regression. Expression-bodied startup methods, multiple builders, import deduplication, all batch-fix cases, and every other fluent-chain form are not newly covered by this test.
+- The later vulnerability-related restore failure did not reach any test and is not counted as a code-fix verification result.
 
 **Toolkit**
-- Tool: ship manifest (unit 7) listing must-pass and excluded checks with dated reasons; Claude Code ran the checks and wrote `test_evidence.md` from the output.
-- What it produced: `evidence-879/20261010-082206/check-1..4.txt` and `results.txt`, each with exit code and source.
-- Difficulties: the test-file format check printed a workspace warning that looked like a failure until I read the exit code.
-- What changed: `results.txt` records the exit code next to each command so warnings and failures cannot be confused.
+
+- Tool: repository-derived ship manifest, Claude Code as the command runner, and gate/precheck reports as records of package readiness.
+- What it produced: four historical check logs and result summaries, the before/after regression excerpts, and final-commit Debug evidence. The observable outcomes are included here rather than requiring access to local files.
+- Difficulties: workspace warnings could be mistaken for failure, and an early passing report could be mistaken for evidence about the final amended commit.
+- What changed: exit codes, configuration, source revision, and the boundary of each check are now stated together. Proposed commands, historical commands, public CI results, and newly failed setup attempts are not pooled into one undifferentiated “all checks passed” claim.
 
 ## Implementation Notes
 
-**2026-10-10, morning (investigation and implementation)**
-Set up the SDK and workloads (NETSDK1147 on first build, fixed by installing `maui` and `android` workloads). Baseline: 16 passed. Wrote `VerifyCodeFixInitializesToolkitBeforeBuild`; it failed with `.Build().UseMauiCommunityToolkit()`. Tried ChatGPT's `.First()` swap; still failed. Switched to `FindNode(diagnosticSpan, getInnermostNodeForTie: true)`; filtered test passed, full project 17 passed. Posted the investigation comment on #879 at 13:45 UTC (voice guard passed at 08:31 PDT after two evidence-ordering stops). Maintainer replied "Go for it" at 15:23 UTC.
+These entries preserve the dates of the work. This expanded October 21 edition adds explanations and public-record corrections from the retained records; it is not presented as an untouched contemporaneous transcript.
 
-**2026-10-10, 08:11 to 08:44 PDT (checking, correction, shipping)**
-08:11 saved `environment.txt`. 08:22 to 08:23 ran the four manifest checks, all exit 0. 08:29 amended `9a93b284` to `91583887` (one blank line removed from the test file; provider byte-identical). 08:30 to 08:33 voice guard passed on the PR draft. 08:33 gate PASS on the old sha; 08:36 gate BLOCK for stale evidence; recaptured before/after against `91583887`; 08:38 and 08:40 gate PASS with 4/4 manifest checks ok and 7/7 pr-precheck checks pass. 08:44 hook blocked the literal `~` body-file path; retried with the absolute path; PR #3343 opened.
+**2026-10-10 — Setup, baseline, and first regression**
 
-Implementation diff (authoritative source: `git show 91583887` in `~/maui-issue-879`; the saved `evidence-879/change.patch` predates the amend by one blank line):
+Located the SDK after the PATH failure, resolved the Android-workload error, and obtained the baseline 16-pass result. Inspected the six initialization-class tests and found no call applying the provider. Added the chained-`Build()` regression, observed the fixed-source mismatch, tried ChatGPT's unsuccessful `.First()` suggestion, and moved to span-based selection. The corrected filtered test and full suite passed in the recorded runs.
 
-```diff
--		var declaration = root?.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().Last() ?? throw new InvalidOperationException();
-+		var declaration = root?.FindNode(diagnosticSpan, getInnermostNodeForTie: true) as InvocationExpressionSyntax ?? throw new InvalidOperationException();
-```
+**2026-10-10 — Public issue discussion, with timestamp correction**
 
-plus 51 added lines in the test file for the new test. Two files, 52 insertions, 1 deletion, one commit.
+The public investigation comment was created at **13:45:12 UTC / 06:45:12 PDT**, the maintainer replied at **15:23:39 UTC / 08:23:39 PDT**, and my existing comment was edited at **15:38:55 UTC / 08:38:55 PDT**. Later local guard checks cannot be placed before the comment's creation. The current public issue comment summarizes the 16-to-17 result and the placement correction but does not contain the command/output blocks or AI-disclosure line from some local drafts. The PR contains the before/after excerpt and AI disclosure. A local draft pass is therefore not proof that the same draft was published unchanged.
+
+**2026-10-10 — Evidence, amend, gate, and PR opening**
+
+The local record reports an environment capture around 08:11 PDT, the four early checks around 08:22–08:23, an initial gate pass, a stale-evidence block, recaptured regression output, and later gate passes around 08:38 and 08:40. Public commit metadata records the final commit's author timestamp as **15:29:13 UTC / 08:29:13 PDT** and committer timestamp as **15:33:35 UTC / 08:33:35 PDT**; this distinguishes the author date from the later amended commit rather than assigning one exact amend time from a minute-level recap. The absolute body-file path fixed the PR-opening hook failure, and the public PR creation timestamp is **15:44:40 UTC / 08:44:40 PDT**.
+
+The authoritative [commit diff](https://github.com/CommunityToolkit/Maui/commit/915838870f6bb95cfc3993dbc895a8016ba34b9f) replaces one provider line and adds 51 test lines: **52 insertions and one deletion across two files**. An earlier local patch contained one additional blank line. It is a historical working patch, not the final diff. The contribution commit also records Claude co-authorship; the public PR description discloses ChatGPT and Claude Code assistance.
+
+**2026-10-10 — Review and merge**
+
+The automated review recommended approval at 16:14:41 UTC and reported zero open findings. TheCodeTraveler submitted an APPROVED review at 16:36:51 UTC while asking for a CLA agreement reply. The PR merged at 16:42:48 UTC, and the issue closed as completed at 16:42:50 UTC. I do not infer CLA-check completion from those events.
+
+**2026-10-17 — Retrospective scout, rubric correction, and orientation**
+
+Installed the scout after the contribution was already complete. The first manually tested query was unnecessarily restricted to the old classroom Path Review repository; ChatGPT corrected that direction to the real-project Python/`good first issue` query before the paid scan. The scan graded five candidates, exposed the absent-deliverable loophole, and led to actual branch-(g) changes and dated notes. The course site showed the Maui issue plus two comparison claims, and both comparison candidates were graded under the patched rubric. A separate scoped orientation clarified the analyzer/provider/verifier connections and replaced the earlier handwritten memory with distilled agent findings. Neither tool run is retroactively credited with choosing or implementing #879.
+
+**2026-10-17 — Additional reproduction attempt blocked during restore**
+
+A temporary-worktree attempt to rerun the old-provider comparison stopped on `NU1902` and `NU1903` package advisories treated as errors. It produced no test verdict. That result is retained as an environment limitation, and the original successful before/after experiment remains the evidence for the code-fix change.
+
+**2026-10-21 — Monitor, declined draft, and documentation review**
+
+The official Unit 8 starter was absent locally, then downloaded and installed. Empty playbook sections blocked a full monitor run until the adopted rules were written. The state canary and full run read the already merged PR, and I declined the draft after its limited context became clear. This documentation review then checked the official story template, pinned source, commit metadata, issue-comment timestamps, and PR records. It corrected the original test taxonomy, the initial-post/guard chronology, the early Release-log provenance, and overbroad workload/coverage statements. No new code tests, scout scan, or gate run was performed for the writing expansion.
 
 **Toolkit**
-- Tool: Claude Code as the command runner and transcript writer; git for the amend.
-- What it produced: the dated evidence folders and the amended commit.
-- Difficulties: amending after evidence capture invalidated the evidence's provenance. The gate caught it; I had not.
-- What changed: capture evidence last, after the final commit, and name files by sha.
+
+- Tool: Claude Code for historical command execution and local notes; Git/GitHub metadata for the public commit and event sequence; ChatGPT for the final source-backed editorial audit.
+- What it produced: the final two-file change, dated local records, and the more precise chronology above.
+- Difficulties: author and committer times were conflated, local draft history was conflated with public comment creation, and preserved old reports could be mistaken for final-revision evidence.
+- What changed: the final commit and public timestamps now anchor the chronology, while uncertain local ordering remains approximate. Documentation corrections preserve the earlier limitations instead of rewriting history to make the process look seamless.
 
 ## Pull Request
 
 **PR Link:** https://github.com/CommunityToolkit/Maui/pull/3343
 
-**PR Description:** Title: `Fix UseCommunityToolkitInitializationAnalyzer code fix inserting UseMauiCommunityToolkit() after Build()`. The body follows the repository template: description of change with the before and after output, `Fixes #879`, checklist, and additional information. Checklist as submitted: tests checked, rebased-on-main checked, coding-standard checked. Left unchecked with a written reason: the `approved`/`Championed` box (the issue is labeled `enhancement` and `help wanted`; the maintainer's "Go for it" is a comment, not a label, so I left that judgment to the core team), samples (no sample-app surface), and documentation (no public API change). AI assistance disclosed in the body: ChatGPT for investigation and drafting, Claude Code for running the checks and drafting the description from their output. Full text at `beat-2-contribution/drafts-879/pr_draft.md`.
+**PR Description:** The submitted title was `Fix UseCommunityToolkitInitializationAnalyzer code fix inserting UseMauiCommunityToolkit() after Build()`. The description explains the ordering problem, the diagnostic-span selection, the generated-source comparison, full-project test results, exclusions, and AI assistance. It uses `Fixes #879`; GitHub records the PR merged and issue closed as completed.
+
+The checklist marked tests, rebasing on main, and coding-standard checks complete. It left approval/champion status, samples, and separate documentation unchecked with explanations: the issue had `enhancement`/`help wanted` labels and a supporting maintainer comment rather than the checklist's named approval label; the implementation had no sample-app change or public API change. The maintainer's later approval and merge are the public outcome, not a reason to rewrite the checklist as if every box had been checked at submission.
+
+One correction to the public PR wording belongs in this story: its description says the analyzer already had “16 behavior tests.” The accurate count is **16 project tests**, including **one ID assertion and five analyzer-behavior tests in the target class**, plus ten tests in the other analyzer classes. The new code-fix test brought the project to 17 and the target class to seven. The posted PR also states that the generated output does not compile; here I explain that conclusion through the receiver types while limiting the directly executed observation to the harness mismatch. I have not silently edited the public history or represented those wording corrections as new upstream changes.
 
 **Maintainer Feedback:**
-- 2023-01-07, on the issue: TheCodeTraveler invited a PR with unit tests. This is the original invitation, before my involvement.
-- 2026-10-10 15:23 UTC, on the issue: "Thanks @alexh30486-ui! Sounds good. Go for it." This approved the narrowed scope (code-fix coverage plus the ordering fix). No label was applied.
-- 2026-10-10, on the PR: TheCodeTraveler review, state APPROVED: "Thanks @alexh30486-ui! Approved. Could you please respond with the comment `@dotnet-policy-service agree`? Once you do we will be able to merge this PR."
-- 2026-10-10, on the PR: Copilot pull-request reviewer, state COMMENTED: "Approval recommended", 0 open findings.
-- My response: I recall submitting the agreement reply on October 10, 2026, but the API records inspected on October 21 contain no comment I can cite. I cannot verify that the reply posted successfully or that the CLA check completed. The 15:11 PDT snapshot on 2026-10-10 and the 15:51 PDT record on 2026-10-21 both show zero PR comments from me and `license/cla` still QUEUED. The merge is not treated here as proof that the CLA check completed.
 
-**Status, in order:**
-
-1. 2026-10-10 08:44 PDT, at opening: the `gh pr create` output showed PR #3343 open with checks pending. That output appears in the terminal transcript I supplied; no separate saved log path is identified.
-2. 2026-10-10 15:11 PDT, one `gh pr view` fetch, superseded by record 3 below. It reported the PR merged and showed the CI and review state current at that moment:
-
-| Item | State at 15:11 PDT |
+| Event | Feedback and recorded response |
 | --- | --- |
-| PR state | MERGED by TheCodeTraveler at 16:42 UTC, merge commit `f7f9f4488b168debb8db194895d40ddd7e345fd2` |
-| Review decision | APPROVED |
-| Build Library (windows-latest, macos-26) | SUCCESS |
-| Build Sample App (windows-latest, xcode-27) | SUCCESS |
-| Run Benchmarks | SUCCESS |
-| WIP | SUCCESS |
-| `license/cla` | QUEUED, no conclusion recorded |
-| dependabot, sign, release-main, release-nuget | SKIPPED |
+| January 7, 2023 | TheCodeTraveler invited a PR with unit tests in the original issue thread, before my involvement |
+| October 10, 08:23:39 PDT | [TheCodeTraveler supported proceeding](https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6099055335) after my investigation comment; the final implementation stayed limited to the provider and test |
+| October 10, 09:14:41 PDT | [Copilot review](https://github.com/CommunityToolkit/Maui/pull/3343#pullrequestreview-5479813155): approval recommended, zero open findings; this is automated feedback, distinct from human approval |
+| October 10, 09:36:51 PDT | [TheCodeTraveler's APPROVED review](https://github.com/CommunityToolkit/Maui/pull/3343#pullrequestreview-5479894783) also requested `@dotnet-policy-service agree` |
+| CLA reply recollection | I recall submitting the agreement reply on October 10, but the API records inspected on October 21 contain no PR conversation comment I can cite; I cannot verify that the reply posted successfully or that the CLA check completed |
+| October 21 monitor decision | I declined the drafted close-the-loop message because the PR was merged and locked and the issue was already closed; nothing was posted |
 
-3. 2026-10-21 15:51 PDT, pr-monitor full run plus one `gh api` read, saved under `evidence-879/20261021-monitor/`:
+The supplied records do not establish a requested code-revision round after review. I do not invent one to make the contribution story longer. The unresolved CLA record is kept visible: a human review request, an author's recollection, the API's comment list, and a queued check are different facts, and merge does not convert them into proof of acceptance or waiver.
 
-| Item | State at 15:51 PDT |
+**Status:** Merged; issue completed. Status is dated evidence of what happened, not an assignment-grade claim.
+
+| Time | Recorded state | Evidence boundary |
+| --- | --- | --- |
+| October 10, 08:44:40 PDT | PR opened; checks initially pending | Public creation timestamp plus supplied opening-time terminal transcript; no separate opening log path was identified |
+| October 10, 09:42:48 PDT | PR merged as `f7f9f4488b168debb8db194895d40ddd7e345fd2` | Public PR metadata |
+| October 10, 09:42:50 PDT | Issue #879 closed as completed | Public issue metadata |
+| October 10, 15:11 PDT | Historical fetch reported merged/approved, successful build/sample/benchmark checks, and CLA queued | Historical snapshot, retained as a record of that fetch |
+| October 12, 02:20 PDT | PR's later recorded activity was a lock event | Reported by the monitor follow-up inspection; a lock is not a new requested code change |
+| October 21, 15:51 PDT | Full monitor read MERGED/APPROVED and produced a draft; supplementary inspection found issue closed and PR locked | Actual retrospective monitor run; draft declined |
+| October 21 documentation audit | Public API still showed merged/locked, two reviews, no issue-style PR comments, and `license/cla` queued | Read-only source/status review; not a second monitor run |
+
+Check records on the contribution commit distinguish completed checks from the pending CLA integration:
+
+| Check group | Recorded result |
 | --- | --- |
-| PR state | MERGED, merge commit `f7f9f448`, mergedAt 2026-10-10 16:42:48 UTC |
-| Issue #879 | closed 2026-10-10 16:42:50 UTC, state_reason completed |
-| Review decision | APPROVED (TheCodeTraveler 16:36 UTC; Copilot reviewer COMMENTED 16:14 UTC) |
-| PR conversation | locked by github-actions[bot] 2026-10-12 09:20 UTC; zero issue-style comments on the PR in the API |
-| `license/cla` | still QUEUED, no conclusion recorded |
-| Checks, mergeability | "1 pending, 6 passing, 4 skipped", UNKNOWN; leftovers on a merged PR per INSTALL.md |
+| Library build: Windows and macOS | Success |
+| Sample app build: Windows and xcode-27 | Success |
+| Benchmarks | Success |
+| WIP | Success |
+| `license/cla` | Queued; no completion conclusion |
+| Dependabot, signing, release jobs | Skipped in the checked records |
 
-The API shows no PR comment from me; see My response under Maintainer Feedback.
+A pending check and UNKNOWN mergeability on an already merged PR do not undo the public merged state. The monitor installation guidance explicitly warns against treating those leftover fields as the current workflow decision for a merged PR. Likewise, success of a CI job is not a claim that I locally executed that job's entire matrix or inspected its coverage artifacts.
 
 **Toolkit**
-- Tool: ship gate hook on `gh pr create` (unit 7); one `gh pr view` fetch for the 2026-10-10 snapshot (not a monitor run); pr-monitor (unit 8) for the 2026-10-21 record, run retrospectively.
-- What it produced: the hook block on the `~` path, then a pass honoring the 08:40 manual gate; the dated status table above.
-- Difficulties: the `~` block, and the `PR Title: ` prefix in the title file.
-- What changed: absolute paths in hook-inspected arguments; title file stripped before use.
+
+- Tool: the ship gate on PR creation, historical `gh` reads, and the Unit 8 monitor with my adopted playbook.
+- What it produced: the successful opening after a path correction, public review and merge records, dated snapshots, and one merged-follow-up draft that I declined.
+- Difficulties: local draft wording did not always match public prose; the monitor lacked issue-closure, lock, and CLA context; a queued integration could be mistaken for an open PR blocker after merge.
+- What changed: the story now separates the public issue/PR record from local draft passes, records the declined draft, and preserves CLA uncertainty without claiming the agreement was accepted or waived. No follow-up was posted solely to manufacture activity for the assignment.
 
 ## Learnings and Reflections
 
 **Technical Skills Gained**
-- Analyzer coverage and code-fix coverage are different questions. Six tests proved the diagnostic fired; none proved the edit was right. The first code-fix test found a defect.
-- Selecting a syntax node by the diagnostic's span is more precise than picking an endpoint of the ancestor list. `.Last()` and `.First()` are both guesses about chain shape; `FindNode(diagnosticSpan, ...)` uses what the analyzer already reported.
-- Roslyn's `Microsoft.CodeAnalysis.Testing` harness runs the real analyzer and fix end to end and diffs the generated source, which makes the before/after evidence trivial to read.
-- .NET MAUI repositories need the MAUI and Android workloads installed before any project in the solution builds, even an analyzer project with no platform code.
+
+- **Reading the actual test boundary.** An ID assertion checks the diagnostic's name; an analyzer test checks reporting; a code-fix test checks the source edit. Sharing a generic verifier type does not mean each test exercises every capability of that type. Inspecting which verifier method is called identified the missing coverage.
+- **Following a diagnostic through the editor pipeline.** The diagnostic supplies a location, the provider chooses a node, and the edit routine transforms that node. Here the edit routine behaved consistently with a wrongly selected target. The useful investigation followed that connection instead of changing every stage.
+- **Understanding fluent-call placement.** A call chain can look like a short expression while containing nested invocation nodes. The selected node's receiver and result type matter: configuration that belongs to `MauiAppBuilder` must be placed before `Build()` produces the application.
+- **Making the expected edit explicit.** The new test marks the diagnostic location, supplies reference assemblies, and compares normalized fixed source including the import. It makes a concrete edit expectation visible to future contributors.
+- **Separating source conclusions from executed observations.** The source supports the receiver-mismatch explanation. The saved failing test directly shows a fixed-source difference. Those are related forms of evidence, but I should not claim a separate compilation experiment that I did not perform.
+- **Understanding build dependencies.** This analyzer test project references platform-adjacent toolkit projects, which led to workload setup even though the edited file was a Roslyn provider. That observed dependency should not be generalized to every analyzer project.
+- **Using public state carefully.** A merged PR, a queued CLA integration, a locked thread, and a recent bot event can coexist. A monitor's first summary is a starting point for deciding whether a draft makes sense, not automatic authorization to send it.
 
 **Challenges Overcome**
-- `dotnet` missing from PATH and NETSDK1147 from missing workloads: resolved by using the full SDK path and installing the workloads.
-- A confidently suggested `.First()` fix that did not work: caught by the already-failing test.
-- Voice guard stops for claims placed before evidence: fixed by reordering the comment.
-- Ship gate block for evidence tied to a superseded commit: fixed by recapturing after the amend.
-- Hook block on a literal `~` path: fixed with an absolute path.
+
+| Challenge | Action and practical result |
+| --- | --- |
+| SDK unavailable through PATH | Located the installed executable and used its full path |
+| `NETSDK1147` workload error | Installed the required MAUI/Android workloads; the historical baseline then ran |
+| Plausible AI proposal still failed | Retained the regression expectation and rejected `.First()` when it did not satisfy it |
+| Evidence tied to a superseded commit | Recaptured the comparison and named the final revision explicitly |
+| Draft asserted results before evidence | Revised local drafts under the voice guide; kept the public posting history distinct from draft approval |
+| Hook could not resolve a literal body-file path | Used an absolute path; the PR opened through the gate |
+| Old issue wording obscured existing tests | Read the actual test methods and narrowed the contribution with maintainer support |
+| Retrospective scout accepted a vague request | Patched the required scope rule and preserved the original grades as historical results |
+| Monitor draft lacked important thread context | Checked the supplementary record, declined the draft, and documented the limitation |
+
+Not every difficulty was resolved. The later dependency-audit failure stopped a fresh reproduction before test execution, the original selection still has no contemporaneous scout run, and the CLA reply remains unverifiable in the inspected public comments. Honest documentation makes those boundaries inspectable; it does not turn missing evidence into completed work.
 
 **What I'd Do Differently Next Time**
+
 I would inspect the existing tests before relying on an issue's old description and save baseline and before-and-after output as I go.
+
+The concrete process implications in this record are to preserve a baseline before editing, keep the first failing output, tie later validation to the final revision, check the public posted text against the local draft, and run selection/orientation tools during their intended phases. Those are prospective improvements suggested by the documented gaps, not claims that every one was already part of my original workflow. The correction to the scout also demonstrates a useful constraint: a title, author role, or label is not enough to establish a real deliverable when the request itself remains undefined.
 
 ## Resources Used
 
-- Issue #879 thread and CONTRIBUTING.md in `CommunityToolkit/Maui`: scope, formatting command, excluded diagnostics, prerequisites.
-- `.github/workflows/dotnet-build.yml`: source of the Release build and test commands in the ship manifest.
-- `Microsoft.CodeAnalysis.Testing` (already referenced by the test project): drives the analyzer and code fix in the regression test.
-- ChatGPT: code reading, the `.First()` suggestion that failed, the `FindNode` suggestion that worked, and draft text for the change, test, and issue comment.
-- Claude Code: ran the formatting, build, and test commands; saved transcripts; drafted the PR description and this story from the saved records.
-- Scoped orientation (unit 6 repo memory), retrospective run 2026-10-17: `evidence-879/20261017-orientation.md`, distilled into `~/maui-issue-879/CLAUDE.local.md`.
-- Issue scout (unit 5), retrospective run 2026-10-17: `~/.claude/skills/issue-scout/scan-output.md` and `scan-notes.md`. ChatGPT helped draft the rubric and strategy wording; Claude Code ran the search, grading, and rubric edit.
-- Voice guard (unit 6) and ship gate (unit 7): hooks on `gh issue comment` and `gh pr create`; logs at `~/.claude/voice-guard/guard-log.md` and `~/.claude/ship-gate/gate-log.md`.
-- `gh` CLI: opened the PR and took the one status snapshot.
-- pr-monitor (unit 8), installed and run 2026-10-21: `~/.claude/pr-monitor/` (runner, move forms, my `playbook.md`); run copies in `evidence-879/20261021-monitor/`.
+- [Issue #879](https://github.com/CommunityToolkit/Maui/issues/879): original testing request and maintainer invitation.
+- [My investigation/claim comment](https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6098129467) and [maintainer reply](https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6099055335): public discussion and support for proceeding.
+- [Final contribution commit](https://github.com/alexh30486-ui/Maui/commit/915838870f6bb95cfc3993dbc895a8016ba34b9f): authoritative provider change, regression test, file counts, and AI co-authorship record.
+- [Pinned analyzer source](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/src/CommunityToolkit.Maui.Analyzers/UseCommunityToolkitInitializationAnalyzer.cs), [provider](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/src/CommunityToolkit.Maui.Analyzers.CodeFixes/UseCommunityToolkitInitializationAnalyzerCodeFixProvider.cs), and [test class](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/src/CommunityToolkit.Maui.Analyzers.UnitTests/UseCommunityToolkitInitializationAnalyzerTests.cs): detection, selected-node edit, test taxonomy, and regression implementation.
+- [Pinned extension declaration](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/src/CommunityToolkit.Maui/AppBuilderExtensions.shared.cs): the builder receiver used in the source-based explanation.
+- [Pinned CONTRIBUTING.md](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/CONTRIBUTING.md) and [build workflow](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/.github/workflows/dotnet-build.yml): prerequisites, formatter exclusions, and repository build/test conventions. No AI prohibition was identified in the contributing guide inspected; that is not a statement that every repository policy file was exhaustively checked.
+- [PR #3343](https://github.com/CommunityToolkit/Maui/pull/3343), [automated review](https://github.com/CommunityToolkit/Maui/pull/3343#pullrequestreview-5479813155), and [human approval](https://github.com/CommunityToolkit/Maui/pull/3343#pullrequestreview-5479894783): public validation, requested agreement reply, final description, and merge outcome.
+- ChatGPT: investigation assistance, the unsuccessful `.First()` proposal, the successful span-selection proposal, test/comment drafting, and the October 21 source-backed documentation expansion. Claude Code: historical local commands, saved reports, scoped orientation, draft revisions, gate invocation, and monitor installation/execution. These tools had distinct roles; their output was not a substitute for the maintainer's decision.
+- Unit 5 issue scout: local `~/.claude/skills/issue-scout/scan-output.md` and `scan-notes.md`; the scan, patched rule, and two comparison verdicts are summarized in this story. Candidate issue links: [WrenAI #1202](https://github.com/Canner/WrenAI/issues/1202) and [agentic-operator-core #132](https://github.com/Clawdlinux/agentic-operator-core/issues/132).
+- Unit 6 voice guard and scoped memory: local `~/.claude/voice-guard/guard-log.md`, `evidence-879/20261017-orientation.md`, and the excluded `~/maui-issue-879/CLAUDE.local.md`. Guard draft outcomes and orientation timing are stated above.
+- Unit 7 gate: local `ship-manifest.md`, `test_evidence.md`, check logs, and `~/.claude/ship-gate/gate-log.md`; the outcomes, warning boundaries, amend problem, and exclusions are reproduced in the relevant sections.
+- Unit 8 [official starter](https://github.com/codepath/ai301-unit8-starter): runner, installation guidance, move forms, and playbook template. The adopted playbook and `run-report.md`, `drafted-move.md`, and `playbook-snapshot.md` remain local under `evidence-879/20261021-monitor/`; the actual outcome and decision are recorded here.
+- [Official contribution-story template](https://github.com/codepath/ai301-coursework-template/blob/main/beat-2-contribution/contribution-story.md): exact section names, four weekly entries, and seven phase Toolkit blocks used to check the structure of this expanded account.
+- The first-issue evidence guide supplied for this October 21 review: a map from rubric families to GitHub and snapshot evidence. It helped expose the limits of badge, label, policy, last-push, and old-claim inferences in the expanded documentation; this is not a claim that a Copilot edit or guide-based audit was recorded before the original contribution.
+
+For selection evidence, snapshot recency belongs to the capture date and live recency to the run date. Historical October 17 scout verdicts were not reevaluated using October 21 activity. Stars, labels, author badges, and repository instructions are signals to investigate, not guarantees of adoption, responsiveness, manageable scope, availability, or permission.
+
+The local paths above identify retained working records. They are not public download links, separate Assignment 5 submissions, or evidence that a grader can open files absent from the repository. The important results, limits, and public resolving links are included directly in this story. Repository preparation and a successful push also do not establish that the course portal's submission button was clicked; that remains a separate submission action.

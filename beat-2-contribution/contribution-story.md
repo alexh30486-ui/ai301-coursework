@@ -6,9 +6,9 @@
 
 **GitHub Username:** alexh30486-ui
 
-**Issue:** https://github.com/CommunityToolkit/Maui/issues/879
+**Issue:** [CommunityToolkit/Maui #879](https://github.com/CommunityToolkit/Maui/issues/879)
 
-**Pull Request:** https://github.com/CommunityToolkit/Maui/pull/3343
+**Pull Request:** [CommunityToolkit/Maui #3343](https://github.com/CommunityToolkit/Maui/pull/3343)
 
 **Project:** .NET MAUI Community Toolkit; C#; Roslyn analyzer and code-fix tooling.
 
@@ -28,9 +28,9 @@ This account separates three kinds of evidence. Public source, the final commit,
 
 ## Toolkit
 
-**Unit 5: Issue scout installed and evaluated retrospectively on 2026-10-17; it did not select the Maui contribution**
+**Unit 5: Issue scout built and run on 2026-10-17, after the Maui contribution; one scope rule patched**
 
-On October 17, after the October 10 contribution had already merged, I installed `issue-scout`, restored my Python fit profile, and tested a Python/`good first issue` query that returned 100 results. Claude graded the top five under the configured ranking: three accepted and two rejected because existing PRs already claimed to close them; acceptance of the vague issue “Review security concepts” exposed an owner/label exemption that allowed an absent deliverable to pass. I corrected the bounded-scope rule with branch (g), requiring the title, body, or thread to identify a behavior, file, symptom, or concrete deliverable regardless of author identity or starter label. Direct grading of WrenAI #1202 and agentic-operator-core #132 then accepted both at moderate and low personal fit, while leaving an availability ambiguity unresolved: old claim-shaped comments were treated as inactive without a defined cutoff, and a proposed 60-day rule was not implemented.
+On October 17, after the October 10 contribution had merged, I wrote my scout's fit profile, one Python `good first issue` query, and two ranking filters, then ran one 100-result scan that graded five candidates: three accepted, two rejected because an open PR already said `Closes #5`. The scan accepted the vague owner-filed issue "Review security concepts", which exposed a scope loophole: the owner/starter-label exemption let an issue with no deliverable pass. I added fail branch (g) to the bounded-scope rule and graded two course-site candidates directly under the patched rubric; a claim-age cutoff remains proposed, not applied. No scout run graded Maui #879; the selection on October 10 was manual.
 
 **Unit 6: Voice guard checked revised drafts; scoped repository memory was completed retrospectively on 2026-10-17**
 
@@ -46,7 +46,7 @@ On October 21, I adopted a playbook with a seven-day first-response threshold, a
 
 ## Why I Chose This Issue
 
-I chose [CommunityToolkit/Maui #879](https://github.com/CommunityToolkit/Maui/issues/879) because the maintainer had invited contributions, the test work looked bounded, and I wanted to try applying what I had learned in Python to a C# project. My earlier fit profile preferred a small Python bug or test/fixture correction with a clear reproduction and a narrow file surface; MAUI was a language and setup stretch, but the requested test work matched the kind of contribution I wanted to practice. I manually read the issue, contributing guidance, analyzer, provider, and existing tests. The issue's description was stale relative to the checkout: six tests already existed in the target class, but none applied the code fix. My [investigation and claim comment](https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6098129467) was created October 10 at 13:45:12 UTC and edited at 15:38:55 UTC; TheCodeTraveler's [“Sounds good. Go for it” reply](https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6099055335) arrived at 15:23:39 UTC and supported proceeding with the narrowed scope. That response is evidence of support during the work, not evidence that I knew in advance how quickly a maintainer would reply.
+I chose [CommunityToolkit/Maui #879](https://github.com/CommunityToolkit/Maui/issues/879) because the maintainer had invited contributions, the test work looked bounded, and I wanted to try applying what I had learned in Python to a C# project. My earlier fit profile preferred a small Python bug or test/fixture correction with a clear reproduction and a narrow file surface; MAUI was a language and setup stretch, but the requested test work matched the kind of contribution I wanted to practice. I manually read the issue, contributing guidance, analyzer, provider, and existing tests. The issue's description was stale relative to the checkout: six tests already existed in the target class, but none applied the code fix. My [investigation and claim comment, posted as @alexh30486-ui](https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6098129467) was created October 10 at 13:45:12 UTC and edited at 15:38:55 UTC; TheCodeTraveler's [“Sounds good. Go for it” reply](https://github.com/CommunityToolkit/Maui/issues/879#issuecomment-6099055335) arrived at 15:23:39 UTC and supported proceeding with the narrowed scope. That response is evidence of support during the work, not evidence that I knew in advance how quickly a maintainer would reply.
 
 The course Issue Selection site later showed #879 in my claimed issues alongside the two comparison candidates, confirming it was present on the course site; that listing does not establish when each claim was made. No scout run selected or graded #879 before I implemented it. My October 17 scout work was retrospective practice: [WrenAI #1202](https://github.com/Canner/WrenAI/issues/1202), an environment-variable and launcher toggle across several recommendation flows, received moderate fit, and [agentic-operator-core #132](https://github.com/Clawdlinux/agentic-operator-core/issues/132), a terminal-recording GIF task, received low fit. Their acceptance showed that passing required checks and matching my preferred work are different judgments. The broad search also admitted a vague owner-filed issue with a starter label, which led to the actual branch-(g) correction; the proposed claim-age cutoff was left unresolved because the scan had interpreted “current” without an explicit threshold. I am recording what the tool taught me after the contribution rather than claiming it made a selection decision it never made. The evidence map below was added using the guide supplied for the October 21 documentation review; it does not supply a missing original scout verdict.
 
@@ -60,10 +60,10 @@ The course Issue Selection site later showed #879 in my claimed issues alongside
 
 **Toolkit**
 
-- Tool: manual issue/source inspection for the original choice; retrospective `issue-scout` using my saved fit profile, query, ranking rules, and patched rubric on October 17.
-- What it produced: no original scout verdict for #879; a later 100-result scan, five detailed grades, two direct candidate grades, and dated scan notes. The historical output is summarized here because the local tool files are not submitted artifacts.
-- Difficulties: the old issue description did not describe current test coverage; a starter label and owner identity also proved too permissive for a vague candidate. My Python profile did not make every returned repository or task a good personal fit.
-- What changed: branch (g) now prevents author identity or labels from rescuing a request with no identifiable behavior or deliverable. I retained the historical grades, marked the cutoff idea proposed, and kept the original selection gap explicit.
+- Tool: manual issue/source inspection chose #879 on October 10; `issue-scout` was built and run on October 17, afterward. Fit profile (`scope.md`): "a small, testable first contribution in Python, especially a bug fix or test/fixture correction with a clear reproduction and a narrow file surface." Query (`search-strategy.md`): `gh search issues --language python --label "good first issue" --state open --limit 100`. Ranking: drop assignees, prefer `good first issue`/`help wanted`, order by fewest comments then most recent update; grade the top 5. Rubric checks: maintainer activity, repository in use, bounded newcomer scope, available to claim, contribution policy, maintainer responsiveness.
+- What it produced: no verdict on #879, which was never fed to it. One scan on October 17: 100 results; all top-5 had zero comments and were updated within two hours. Accepted: agent-access-review #4 (three `catalog.yaml` entries plus one test, best fit; six-day-old repo, zero stars), Foxel #141 (mobile list-mode UI feature, low fit), cyber-security-basics #869 ("Review security concepts", daily auto-generated one-liner, owner never comments). Rejected: llm-redteam-evidence #5 and agent-access-review #5, each closed by an open PR filed within 15 minutes of the issue. Direct grading of the two course-site comparison candidates under the patched rubric: WrenAI #1202 accept (moderate fit; feature across launcher, UI, and ai-service; responsiveness fail at 2 of 4 sampled issues) and agentic-operator-core #132 accept (low fit; Go/Kubernetes docs GIF; CI `AI Attribution Guard` requires human-authored commits).
+- Difficulties: ranking by fewest comments then newest surfaced minutes-old issues in zero-star repos and auto-generated daily issues; two of five paid grading slots went to issues already taken, which ranking fields cannot see. The scope rule passed #869 because the exemption for thin owner/starter-label writeups applied before the "names the behavior, files, or symptoms" clause was reached. "Available to claim" set no age threshold, so months-old claim-shaped comments on both direct candidates were read as not current without a stated cutoff. The Python-only query still returned a frontend feature, and the profile had no explicit rule ranking non-Python repos lower.
+- What changed: same day, I added fail branch (g) to `rubric.md`: "the title, body, and thread together name no behavior, file, symptom, or concrete deliverable at all. Author identity and starter labels never override (g)"; the exemption now reads "provided (g) below does not hold" and the closing clause "When none of (a)-(g) holds, pass." Why: the exemption was meant to excuse a thin writeup of real work, not an issue requesting no change. Historical grades in `scan-output.md` were left as recorded, not regraded. Proposed and not applied: a 60-day staleness rule for claim comments with no PR or follow-up, a minimum star count or issue age in ranking, and a one-line fit ordering for non-Python repos. No rerun or regression eval of the patched rubric was performed. Limitation: all of this postdates the Maui selection and did not inform it.
 
 ## Understanding the Issue
 
@@ -237,7 +237,7 @@ A later reproduction attempt on October 17 stopped before the tests ran: package
 
 - Tool: Claude Code ran the recorded before/after commands and saved transcripts; ChatGPT helped draft the test and interpretation.
 - What it produced: the failure difference, passing filtered result, full Debug result, and commit-qualified evidence filenames summarized above.
-- Difficulties: an early evidence pair named the superseded commit; the first plan also predated preservation of the complete before log. The later October 17 attempt was blocked during dependency restore.
+- Difficulties: an early evidence pair named the superseded commit; the first plan also predated preservation of the complete before log. The later October 17 attempt was blocked during dependency restore. No live `repro-check` run on the claim comment or a repro report is recorded; the October 10 voice-guard passes on the local comment draft and the test commands Claude ran are not a repro-check verdict.
 - What changed: evidence was recaptured against the final revision, and this account distinguishes the original diagnostic experiment from a later environment failure.
 
 ## Solution Approach
@@ -270,6 +270,8 @@ The change deliberately does not redesign analyzer detection, alter other provid
 
 **Implementation Plan**
 
+The implementation target was `UseCommunityToolkitInitializationAnalyzerCodeFixProvider.cs`: in `RegisterCodeFixesAsync`, replace ancestor-based invocation selection with `root.FindNode(diagnosticSpan, getInnermostNodeForTie: true)`. Leave `AddUseCommunityToolkit` unchanged. Add the regression as `VerifyCodeFixInitializesToolkitBeforeBuild` in `UseCommunityToolkitInitializationAnalyzerTests.cs`.
+
 1. Inspect the current tests instead of implementing the issue's old description literally.
 2. Add one code-fix regression to the existing initialization test class, with a diagnostic marker and explicit expected fixed source.
 3. Obtain a failure with the old provider, then correct its target selection.
@@ -289,7 +291,12 @@ The plan changed in three material ways: the requested “untested analyzer” b
 
 ## Testing Strategy
 
-The central question was observable: **when the real provider handles MCT001 on a chain ending in `Build()`, does the resulting source place initialization on the builder?** The before test had to fail for that placement mismatch, and the after test had to pass with the same expected source. The full project then checked that existing ID and analyzer cases still passed.
+The central question was observable: **when the real provider handles MCT001 on a chain ending in `Build()`, does the resulting source place initialization on the builder?** Two observable checks answered it:
+
+1. **Code-fix output:** the regression test failed with the baseline provider because it generated `.Build().UseMauiCommunityToolkit()`, then passed with the corrected provider because the generated source matched `.UseMauiCommunityToolkit().Build()`.
+2. **Existing-suite regression:** the full analyzer test project passed all 17 tests in Debug and Release, showing that the new code-fix test and existing diagnostic tests passed together.
+
+The before and after runs used the same expected source. Formatting and build checks were additional repository checks, not substitutes for these two behavior checks.
 
 | Check | Recorded outcome | What it supports | What it does not establish |
 | --- | --- | --- | --- |
@@ -322,7 +329,7 @@ Test run summary: Passed!
 
 The early Release report in `evidence-879/20261010-082206/check-4.txt` predates the final commit. It supports that earlier run, not final-commit provenance by itself. The supplied gate reports state that the four checks were rerun after the amend and passed at approximately 08:38 and 08:40 PDT; the final-commit filtered and full-Debug files explicitly name `91583887`. I retain those distinctions rather than relabeling the early log as a run against a commit that did not yet exist.
 
-The manifest's check types came from the pinned contributing guide and [CI workflow](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/.github/workflows/dotnet-build.yml). I chose a narrower local scope: provider formatting, test-file formatting, Release provider build, and the analyzer test project. That was a contributor judgment, not a claim that CI required exactly these four local commands or that the local test command reproduced CI's reporting and coverage flags. The analyzer tests run as a step within the library-build workflow; they are not a separate dedicated CI job as an earlier description implied.
+The manifest's check types came from the pinned contributing guide and [CI workflow](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/.github/workflows/dotnet-build.yml). I chose a narrower local scope: provider formatting, test-file formatting, Release provider build, and the analyzer test project. The manifest's excluded table listed full-solution formatting, the other component builds and suites, and benchmarks, each with a reason dated 2026-10-10. That was a contributor judgment, not a claim that CI required exactly these four local commands or that the local test command reproduced CI's reporting and coverage flags. The analyzer tests run as a step within the library-build workflow; they are not a separate dedicated CI job as an earlier description implied.
 
 The source-documented formatting command is:
 
@@ -363,7 +370,7 @@ The public investigation comment was created at **13:45:12 UTC / 06:45:12 PDT**,
 
 **2026-10-10 — Evidence, amend, gate, and PR opening**
 
-The local record reports an environment capture around 08:11 PDT, the four early checks around 08:22–08:23, an initial gate pass, a stale-evidence block, recaptured regression output, and later gate passes around 08:38 and 08:40. Public commit metadata records the final commit's author timestamp as **15:29:13 UTC / 08:29:13 PDT** and committer timestamp as **15:33:35 UTC / 08:33:35 PDT**; this distinguishes the author date from the later amended commit rather than assigning one exact amend time from a minute-level recap. The absolute body-file path fixed the PR-opening hook failure, and the public PR creation timestamp is **15:44:40 UTC / 08:44:40 PDT**.
+The local record reports an environment capture around 08:11 PDT, an 08:20 hook setup block on a bodyless `gh pr create --help` (no manifest check ran), the four early checks around 08:22–08:23, an initial gate pass at 08:33 on `9a93b284`, the 08:36 stale-evidence block (the precheck's `regression-evidence` check read unclear, so its verdict was reject), recaptured regression output, and later gate passes around 08:38 and 08:40 on `91583887`. The manifest hash was unchanged across every run; no rubric was patched to clear the block. The recorded refusals were setup- or evidence-related; no earlier-unit-debt refusal appears in the gate transcript. The PR was opened only after the corrected evidence passed; the later hook setup failure was resolved with an absolute body-file path, not bypassed. Public commit metadata records the final commit's author timestamp as **15:29:13 UTC / 08:29:13 PDT** and committer timestamp as **15:33:35 UTC / 08:33:35 PDT**; this distinguishes the author date from the later amended commit rather than assigning one exact amend time from a minute-level recap. The public PR creation timestamp is **15:44:40 UTC / 08:44:40 PDT**.
 
 The authoritative [commit diff](https://github.com/CommunityToolkit/Maui/commit/915838870f6bb95cfc3993dbc895a8016ba34b9f) replaces one provider line and adds 51 test lines: **52 insertions and one deletion across two files**. An earlier local patch contained one additional blank line. It is a historical working patch, not the final diff. The contribution commit also records Claude co-authorship; the public PR description discloses ChatGPT and Claude Code assistance.
 

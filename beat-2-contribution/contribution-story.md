@@ -30,7 +30,7 @@ This account separates three kinds of evidence. Public source, the final commit,
 
 **Unit 5: Issue scout built and run on 2026-10-17, after the Maui contribution; one scope rule patched**
 
-On October 17, after the October 10 contribution had merged, I wrote my scout's fit profile, one Python `good first issue` query, and two ranking filters, then ran one 100-result scan that graded five candidates: three accepted, two rejected because an open PR already said `Closes #5`. The scan accepted the vague owner-filed issue "Review security concepts", which exposed a scope loophole: the owner/starter-label exemption let an issue with no deliverable pass. I added fail branch (g) to the bounded-scope rule and graded two course-site candidates directly under the patched rubric; a claim-age cutoff remains proposed, not applied. No scout run graded Maui #879; the selection on October 10 was manual.
+On October 17, after the October 10 contribution had merged, I installed the supplied `issue-scout`, restored my existing Python fit profile, wrote one Python `good first issue` query and two ranking filters, and ran one 100-result scan that graded five candidates: three accepted, two rejected because each still-open issue already had an open PR declaring `Closes #5`. The scan accepted the vague owner-filed issue "Review security concepts", which exposed a scope loophole: the owner/starter-label exemption let an issue with no deliverable pass. I added fail branch (g) to the bounded-scope rule and graded two course-site candidates directly under the patched rubric; a claim-age cutoff remains proposed, not applied. No scout run graded Maui #879; the selection on October 10 was manual.
 
 **Unit 6: Voice guard checked revised drafts; scoped repository memory was completed retrospectively on 2026-10-17**
 
@@ -60,14 +60,16 @@ The course Issue Selection site later showed #879 in my claimed issues alongside
 
 **Toolkit**
 
-- Tool: manual issue/source inspection chose #879 on October 10; `issue-scout` was built and run on October 17, afterward. Fit profile (`scope.md`): "a small, testable first contribution in Python, especially a bug fix or test/fixture correction with a clear reproduction and a narrow file surface." Query (`search-strategy.md`): `gh search issues --language python --label "good first issue" --state open --limit 100`. Ranking: drop assignees, prefer `good first issue`/`help wanted`, order by fewest comments then most recent update; grade the top 5. Rubric checks: maintainer activity, repository in use, bounded newcomer scope, available to claim, contribution policy, maintainer responsiveness.
-- What it produced: no verdict on #879, which was never fed to it. One scan on October 17: 100 results; all top-5 had zero comments and were updated within two hours. Accepted: agent-access-review #4 (three `catalog.yaml` entries plus one test, best fit; six-day-old repo, zero stars), Foxel #141 (mobile list-mode UI feature, low fit), cyber-security-basics #869 ("Review security concepts", daily auto-generated one-liner, owner never comments). Rejected: llm-redteam-evidence #5 and agent-access-review #5, each had an open PR whose description said `Closes #5.` Direct grading of the two course-site comparison candidates under the patched rubric: WrenAI #1202 accept (moderate fit; feature across launcher, UI, and ai-service; responsiveness fail at 2 of 4 sampled issues) and agentic-operator-core #132 accept (low fit; Go/Kubernetes docs GIF; CI `AI Attribution Guard` requires human-authored commits).
+- Tool: manual issue/source inspection chose #879 on October 10; the supplied `issue-scout` skill was installed, configured, and run on October 17, afterward. Restored fit profile (`scope.md`): "a small, testable first contribution in Python, especially a bug fix or test/fixture correction with a clear reproduction and a narrow file surface." Query (`search-strategy.md`): `gh search issues --language python --label "good first issue" --state open --limit 100`. Ranking: drop assignees, prefer `good first issue`/`help wanted`, order by fewest comments then most recent update; grade the top 5. Rubric checks: maintainer activity, repository in use, bounded newcomer scope, available to claim, contribution policy, maintainer responsiveness.
+- What it produced: no verdict on #879, which was never fed to it. One scan on October 17: 100 results; all top-5 had zero comments and were updated within two hours. Accepted: agent-access-review #4 (three `catalog.yaml` entries plus one test, best fit; six-day-old repo, zero stars), Foxel #141 (mobile list-mode UI feature, low fit), cyber-security-basics #869 ("Review security concepts", daily auto-generated one-liner, owner never comments). Rejected on availability: llm-redteam-evidence #5 and agent-access-review #5 were still open issues, but each already had an open PR whose description said `Closes #5.` Direct grading of the two course-site comparison candidates under the patched rubric: WrenAI #1202 accept (moderate fit; feature across launcher, UI, and ai-service; responsiveness fail at 2 of 4 sampled issues) and agentic-operator-core #132 accept (low fit; Go/Kubernetes docs GIF; CI `AI Attribution Guard` requires human-authored commits).
 - Difficulties: ranking by fewest comments then newest surfaced minutes-old issues in zero-star repos and auto-generated daily issues; two of five paid grading slots went to issues already taken, which ranking fields cannot see. The scope rule passed #869 because the exemption for thin owner/starter-label writeups applied before the "names the behavior, files, or symptoms" clause was reached. "Available to claim" set no age threshold, so months-old claim-shaped comments on both direct candidates were read as not current without a stated cutoff. The Python-only query still returned a frontend feature, and the profile had no explicit rule ranking non-Python repos lower.
 - What changed: same day, I added fail branch (g) to `rubric.md`: "the title, body, and thread together name no behavior, file, symptom, or concrete deliverable at all. Author identity and starter labels never override (g)"; the exemption now reads "provided (g) below does not hold" and the closing clause "When none of (a)-(g) holds, pass." Why: the exemption was meant to excuse a thin writeup of real work, not an issue requesting no change. Historical grades in `scan-output.md` were left as recorded, not regraded. Proposed and not applied: a 60-day staleness rule for claim comments with no PR or follow-up, a minimum star count or issue age in ranking, and a one-line fit ordering for non-Python repos. No rerun or regression eval of the patched rubric was performed. Limitation: all of this postdates the Maui selection and did not inform it.
 
 ## Understanding the Issue
 
 **Problem Description**
+
+At the baseline, issue #879's request for analyzer tests was partly out of date: six tests already checked MCT001's identifier and analyzer behavior, but none applied the code fix. When I added a test that applied the fix to a builder chain, it showed that the provider put `.UseMauiCommunityToolkit()` after `.Build()` instead of before it. The provider had selected the outer `Build()` invocation rather than the invocation identified by the diagnostic. The change made `RegisterCodeFixesAsync` select the node at the diagnostic's full source span, and the regression test confirmed the expected call order; the recorded result covers that test case, not every fluent chain or an interactive IDE session.
 
 The toolkit supplies two related pieces of developer tooling. An **analyzer** inspects source and reports diagnostic MCT001 when it recognizes a `UseMauiApp` invocation without a toolkit-initialization call in the enclosing method. A **code-fix provider** offers an edit in response to that diagnostic. Detecting a missing call and inserting the call correctly are separate behaviors, so tests of the first do not automatically cover the second.
 
@@ -194,11 +196,23 @@ The [contributing guide pinned to the contribution commit](https://github.com/Co
    Exit code: 2
    ```
 
-6. Restore the corrected provider from `91583887` and rerun the same filtered test. The saved after result was exit 0, one succeeded, zero failed. Run the full project as a separate regression check; the recorded corrected-suite result was 17 passed.
+6. Restore the corrected provider from `91583887` and rerun the same filtered test. The saved after result, same command, exit code 0:
+
+   ```text
+   Test run summary: Passed!
+     total: 1
+     failed: 0
+     succeeded: 1
+     skipped: 0
+   ```
+
+   Run the full project as a separate regression check; the recorded corrected-suite result was 17 passed.
+
+Steps 2 through 6 describe commands that were executed on October 10 and whose output was saved. The recipe below is different: it is written for someone reproducing the comparison later and was not itself run.
 
 The original complete before-run transcript was saved after the first investigation plan had already said it was missing. The later recapture fills that evidence gap; it does not mean the transcript existed when the plan was first written.
 
-For a reader reconstructing the comparison now, the following is a **newly documented recipe**, not a claim of a newly executed run. Run it from a clone containing the contribution commit after setting up the documented SDK/workloads; it creates a separate worktree with the new test and restores only the old provider into that worktree:
+The following is a **newly documented recipe**, not a claim of a newly executed run. Run it from a clone containing the contribution commit after setting up the documented SDK/workloads; it creates a separate worktree with the new test and restores only the old provider into that worktree:
 
 ```bash
 contribution_sha=915838870f6bb95cfc3993dbc895a8016ba34b9f

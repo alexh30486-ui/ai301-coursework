@@ -166,20 +166,20 @@ The regression verifier reported that this generated source differed from the ex
 | .NET SDK | 10.0.401 |
 | SDK executable used | `/usr/local/share/dotnet/x64/dotnet` |
 | Test target / host | `net10.0` / x64 test host |
-| Hardware architecture | Not established by the SDK path; no ARM64 claim |
+| Hardware architecture | The saved environment capture contains `arm64`; the supplied terminal transcript identifies `uname -m` as the command producing that line. The output file itself records no commands; the sequence in the transcript (`date`, `sw_vers`, `uname -m`, `dotnet --version`, `git rev-parse HEAD`, `git branch --show-current`, `git status --short`) matches the file's lines in order. The executable used was the x64 `dotnet`; no emulation setup is inferred |
 | Test framework | xUnit v3; the project references `xunit.v3` 4.0.0 |
 | Roslyn testing packages | Analyzer/code-fix testing packages 1.1.4 in the project |
 | Baseline / corrected commit | `34bce1ad` / `91583887` |
 | Required local setup encountered | .NET SDK and referenced-project workloads; `maui` and `android` installation resolved the observed workload error |
 
-I initially could not invoke `dotnet` because it was absent from PATH. I found the installed executable at the path above and checked the SDK version. The first test-project build then stopped with `NETSDK1147`, requesting Android workloads. Installing the MAUI/Android workloads resolved that barrier and allowed the baseline suite to run with 16 passing tests. The terminal transcript records those steps, but I did not preserve a separate installation log. The workload requirement arose while building this project's references; it does not establish that every standalone analyzer or every project in every MAUI repository needs Android workloads.
+I initially could not invoke `dotnet` because it was absent from PATH. I found the installed executable at the path above and checked the SDK version. The first test-project build then stopped with `NETSDK1147`, requesting Android workloads. Installing the MAUI/Android workloads resolved that barrier and allowed the baseline suite to run with 16 passing tests. No saved log of that 16-test baseline run is retained; the count comes from my October 10 investigation plan and `plan.md` written the same day, and the retained after-run logs show 17 total, consistent with 16 existing tests plus one new one. The terminal transcript records the setup steps, but I did not preserve a separate installation log. The workload requirement arose while building this project's references; it does not establish that every standalone analyzer or every project in every MAUI repository needs Android workloads.
 
 The [contributing guide pinned to the contribution commit](https://github.com/CommunityToolkit/Maui/blob/915838870f6bb95cfc3993dbc895a8016ba34b9f/CONTRIBUTING.md) lists the .NET SDK and MAUI workloads as prerequisites. The test project references toolkit, Camera, and MediaElement projects, which explains why the test surface involves more than the provider's own source file.
 
 **Steps to Reproduce**
 
 1. Work from the pinned repository revision, not an unspecified latest `main`. The original baseline was `34bce1ad`, and the final test is inspectable in `91583887`.
-2. Confirm that the original suite passes: the recorded baseline result was 16 tests passed. A passing baseline does not show that the offered code fix works, because no baseline test applied it.
+2. Confirm that the original suite passes: the baseline result I recorded on October 10 was 16 tests passed (narrative record only; no saved log). A passing baseline does not show that the offered code fix works, because no baseline test applied it.
 3. Add the new test while leaving the provider at its baseline implementation. Its input marks the `CreateBuilder().UseMauiApp<...>()` invocation as diagnostic location 0 and leaves `.Build()` outside the marker.
 4. Run the regression. The saved filtered command was:
 
@@ -220,7 +220,7 @@ Steps 2 through 6 describe commands that were executed on October 10 and whose o
 
 The original complete before-run transcript was saved after the first investigation plan had already said it was missing. The later recapture fills that evidence gap; it does not mean the transcript existed when the plan was first written.
 
-The following is a **newly documented, unexecuted reproduction recipe**, not a claim of a run. Run it from a clone containing the contribution commit after setting up the documented SDK/workloads. It creates a separate worktree with the new test, restores only the old provider there, and runs both test commands from inside that worktree so they use that checkout's repository configuration. The two exit statuses are recorded separately: the before run is evidence only if its output shows the specific `.Build().UseMauiCommunityToolkit()` mismatch, not merely a nonzero exit (the October 17 `NU1902`/`NU1903` restore failure below is an example of a nonzero exit that proves nothing about the code fix). Nothing is deleted automatically, so diagnostic output survives an unexpected failure.
+The following is a **newly documented, unexecuted reproduction recipe**, not a claim of a run. Run it from a clone containing the contribution commit after setting up the documented SDK/workloads. It creates a separate worktree with the new test, restores only the old provider there, and runs both test commands from inside that worktree so they use that checkout's repository configuration. The two exit statuses are recorded separately: the before run is evidence only if its output shows the specific `.Build().UseMauiCommunityToolkit()` mismatch, not merely a nonzero exit (the later `NU1902`/`NU1903` restore failure below is an example of a nonzero exit that proves nothing about the code fix). Nothing is deleted automatically, so diagnostic output survives an unexpected failure.
 
 ```bash
 #!/usr/bin/env bash
@@ -252,7 +252,7 @@ echo "after exit:  $after_status (expected 0)"
 echo "logs kept under $comparison_root; remove the worktree yourself with: git worktree remove \"$comparison_root/before\""
 ```
 
-A later reproduction attempt on October 17 stopped before the tests ran: package restore raised `NU1902` and `NU1903` for `System.Security.Cryptography.Pkcs` 9.0.6, treated as errors. That attempt is a dependency/setup failure, not a second observation of the code-fix defect. It neither replaces the October 10 before/after results nor proves that the regression disappeared. I did not change dependencies or suppress those warnings as part of this contribution. A reader encountering that failure should record it separately rather than label any nonzero test command a successful reproduction.
+A later reproduction attempt stopped before the tests ran: package restore raised `NU1902` and `NU1903` for `System.Security.Cryptography.Pkcs` 9.0.6, treated as errors. No log of that attempt is retained. The error codes come from the terminal excerpt I supplied for the October 21 documentation review; that excerpt's visible output does not show a date, and no saved record establishes one, so its exact execution date is unverified (after October 10, before October 21). That attempt is a dependency/setup failure, not a second observation of the code-fix defect. It neither replaces the October 10 before/after results nor proves that the regression disappeared. I did not change dependencies or suppress those warnings as part of this contribution. A reader encountering that failure should record it separately rather than label any nonzero test command a successful reproduction.
 
 **Reproduction Evidence**
 
@@ -264,7 +264,7 @@ A later reproduction attempt on October 17 stopped before the tests ran: package
 
 - Tool: Claude Code ran the recorded before/after commands and saved transcripts; ChatGPT helped draft the test and interpretation.
 - What it produced: the failure difference, passing filtered result, full Debug result, and commit-qualified evidence filenames summarized above.
-- Difficulties: an early evidence pair named the superseded commit; the first plan also predated preservation of the complete before log. The later October 17 attempt was blocked during dependency restore. No successful live `repro-check` verdict for Maui #879 is established by the available records; the October 10 voice-guard passes on the local comment draft and the test commands Claude ran are not a repro-check verdict.
+- Difficulties: an early evidence pair named the superseded commit; the first plan also predated preservation of the complete before log. A later attempt, exact date unverified, was blocked during dependency restore. No successful live `repro-check` verdict for Maui #879 is established by the available records; the October 10 voice-guard passes on the local comment draft and the test commands Claude ran are not a repro-check verdict.
 - What changed: evidence was recaptured against the final revision, and this account distinguishes the original diagnostic experiment from a later environment failure.
 
 ## Solution Approach
@@ -327,7 +327,7 @@ The before and after runs used the same expected source. Formatting and build ch
 
 | Check | Recorded outcome | What it supports | What it does not establish |
 | --- | --- | --- | --- |
-| Baseline analyzer project | 16 passed | Original suite was green before the added regression | Original code-fix output was correct |
+| Baseline analyzer project | 16 passed (October 10 narrative record; no saved log) | Original suite was green before the added regression | Original code-fix output was correct |
 | New filtered test, baseline provider | Exit 2; one failed; expected/actual order differs | The added test detects the exercised placement defect | Independent compilation or IDE behavior |
 | Same filtered test, corrected provider | Exit 0; one passed | Submitted selection fixes this regression | Every possible invocation shape |
 | Full project, Debug | 17 passed | Existing tests plus new regression pass together | Complete repository or platform coverage |
@@ -442,9 +442,9 @@ The automated review recommended approval at 16:14:41 UTC and reported zero open
 
 Installed the scout after the contribution was already complete. The first manually tested query was unnecessarily restricted to the old classroom Path Review repository; ChatGPT corrected that direction to the real-project Python/`good first issue` query before the paid scan. The scan graded five candidates, exposed the absent-deliverable loophole, and led to actual branch-(g) changes and dated notes. The course site showed the Maui issue plus two comparison claims, and both comparison candidates were graded under the patched rubric. A separate scoped orientation clarified the analyzer/provider/verifier connections and replaced the earlier handwritten memory with distilled agent findings. Neither tool run is retroactively credited with choosing or implementing #879.
 
-**2026-10-17 — Additional reproduction attempt blocked during restore**
+**Date unverified (after 2026-10-10, before 2026-10-21) — Additional reproduction attempt blocked during restore**
 
-A temporary-worktree attempt to rerun the old-provider comparison stopped on `NU1902` and `NU1903` package advisories treated as errors. It produced no test verdict. That result is retained as an environment limitation, and the original successful before/after experiment remains the evidence for the code-fix change.
+A temporary-worktree attempt to rerun the old-provider comparison stopped on `NU1902` and `NU1903` package advisories treated as errors. It produced no test verdict, and no log of it was saved; this entry rests on the terminal excerpt supplied for the October 21 review, whose visible output carries no date. October 21 is the review date, not the execution date. That result is retained as an environment limitation, and the original successful before/after experiment remains the evidence for the code-fix change.
 
 **2026-10-21 — Monitor, declined draft, and documentation review**
 

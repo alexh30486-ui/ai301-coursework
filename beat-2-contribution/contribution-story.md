@@ -20,7 +20,9 @@
 
 **Outcome:** merged October 10, 2026; merge commit [`f7f9f4488b168debb8db194895d40ddd7e345fd2`](https://github.com/CommunityToolkit/Maui/commit/f7f9f4488b168debb8db194895d40ddd7e345fd2).
 
-**Latest documentation and public-record review:** October 21, 2026.
+**Latest public-record snapshot:** October 21, 2026 (PR, issue, review, check, and CLA status as read that day; not refreshed by later edits).
+
+**Latest documentation revision:** October 27, 2026 (wording and evidence corrections only; no tests, tools, or GitHub reads were rerun).
 
 The original issue asked for tests for an initialization analyzer. The checkout already contained tests, so my investigation focused on what they actually verified. One new test applied the offered code fix and inspected the resulting source; it exposed that the fix placed `.UseMauiCommunityToolkit()` after `.Build()`. The submitted change corrected the selected syntax node and added that regression test: two files, 52 insertions, one deletion.
 
@@ -30,7 +32,7 @@ This account separates three kinds of evidence. Public source, the final commit,
 
 **Unit 5: Issue scout built and run on 2026-10-17, after the Maui contribution; one scope rule patched**
 
-On October 17, after the October 10 contribution had merged, I installed the supplied `issue-scout`, restored my existing Python fit profile, wrote one Python `good first issue` query and two ranking filters, and ran one 100-result scan that graded five candidates: three accepted, two rejected because each still-open issue already had an open PR declaring `Closes #5`. The scan accepted the vague owner-filed issue "Review security concepts", which exposed a scope loophole: the owner/starter-label exemption let an issue with no deliverable pass. I added fail branch (g) to the bounded-scope rule and graded two course-site candidates directly under the patched rubric; a claim-age cutoff remains proposed, not applied. No scout run graded Maui #879; the selection on October 10 was manual.
+On October 17, after the October 10 contribution had merged, I installed the supplied `issue-scout` starter, restored my existing Python fit profile into its `scope.md`, wrote one Python `good first issue` query and two ranking filters in its `search-strategy.md`, and ran one 100-result scan that graded five candidates: three accepted, two rejected because each still-open issue already had an open PR declaring `Closes #5`. The scan accepted the vague owner-filed issue "Review security concepts", which exposed a scope loophole: the owner/starter-label exemption let an issue with no deliverable pass. I added fail branch (g) to the bounded-scope rule and graded two course-site candidates directly under the patched rubric; a claim-age cutoff remains proposed, not applied. No scout run graded Maui #879; the selection on October 10 was manual.
 
 **Unit 6: Voice guard checked revised drafts; scoped repository memory was completed retrospectively on 2026-10-17**
 
@@ -60,8 +62,14 @@ The course Issue Selection site later showed #879 in my claimed issues alongside
 
 **Toolkit**
 
-- Tool: manual issue/source inspection chose #879 on October 10; the supplied `issue-scout` skill was installed, configured, and run on October 17, afterward. Restored fit profile (`scope.md`): "a small, testable first contribution in Python, especially a bug fix or test/fixture correction with a clear reproduction and a narrow file surface." Query (`search-strategy.md`): `gh search issues --language python --label "good first issue" --state open --limit 100`. Ranking: drop assignees, prefer `good first issue`/`help wanted`, order by fewest comments then most recent update; grade the top 5. Rubric checks: maintainer activity, repository in use, bounded newcomer scope, available to claim, contribution policy, maintainer responsiveness.
-- What it produced: no verdict on #879, which was never fed to it. One scan on October 17: 100 results; all top-5 had zero comments and were updated within two hours. Accepted: agent-access-review #4 (three `catalog.yaml` entries plus one test, best fit; six-day-old repo, zero stars), Foxel #141 (mobile list-mode UI feature, low fit), cyber-security-basics #869 ("Review security concepts", daily auto-generated one-liner, owner never comments). Rejected on availability: llm-redteam-evidence #5 and agent-access-review #5 were still open issues, but each already had an open PR whose description said `Closes #5.` Direct grading of the two course-site comparison candidates under the patched rubric: WrenAI #1202 accept (moderate fit; feature across launcher, UI, and ai-service; responsiveness fail at 2 of 4 sampled issues) and agentic-operator-core #132 accept (low fit; Go/Kubernetes docs GIF; CI `AI Attribution Guard` requires human-authored commits).
+- Tool: manual issue/source inspection chose #879 on October 10; the supplied `issue-scout` starter (its `SKILL.md`, rubric template, and empty strategy file) was installed, then configured and run on October 17, afterward. Restored fit profile (`scope.md`): "a small, testable first contribution in Python, especially a bug fix or test/fixture correction with a clear reproduction and a narrow file surface." Executed query as recorded in `search-strategy.md` and the scan report:
+
+  ```bash
+  gh search issues --language python --label "good first issue" --state open --limit 100 --json title,repository,labels,assignees,commentsCount,updatedAt,url
+  ```
+
+  Two ranking filters written in `search-strategy.md`: prefer `good first issue`/`help wanted` from the returned labels; order by fewest comments, ties by most recent update. The scan report additionally records the skill's assignee drop (0 dropped). Top 5 graded. Rubric checks: maintainer activity, repository in use, bounded newcomer scope, available to claim, contribution policy, maintainer responsiveness.
+- What it produced: no verdict on #879, which was never fed to it. One scan on October 17: 100 results; all top-5 had zero comments and were updated within two hours. Accepted: agent-access-review #4 (three `catalog.yaml` entries plus one test, best fit; six-day-old repo, zero stars), Foxel #141 (mobile list-mode UI feature, low fit), cyber-security-basics #869 ("Review security concepts", daily auto-generated one-liner; responsiveness check failed on 0 owner comments across sampled issues 868, 867, 864, 863, 862). Rejected on availability: llm-redteam-evidence #5 and agent-access-review #5 were still open issues, but each already had an open PR whose description said `Closes #5.` Direct grading of the two course-site comparison candidates under the patched rubric: WrenAI #1202 accept (moderate fit; feature across launcher, UI, and ai-service; responsiveness fail at 2 of 4 sampled issues) and agentic-operator-core #132 accept (low fit; Go/Kubernetes docs GIF; CI `AI Attribution Guard` requires human-authored commits).
 - Difficulties: ranking by fewest comments then newest surfaced minutes-old issues in zero-star repos and auto-generated daily issues; two of five paid grading slots went to issues already taken, which ranking fields cannot see. The scope rule passed #869 because the exemption for thin owner/starter-label writeups applied before the "names the behavior, files, or symptoms" clause was reached. "Available to claim" set no age threshold, so months-old claim-shaped comments on both direct candidates were read as not current without a stated cutoff. The Python-only query still returned a frontend feature, and the profile had no explicit rule ranking non-Python repos lower.
 - What changed: same day, I added fail branch (g) to `rubric.md`: "the title, body, and thread together name no behavior, file, symptom, or concrete deliverable at all. Author identity and starter labels never override (g)"; the exemption now reads "provided (g) below does not hold" and the closing clause "When none of (a)-(g) holds, pass." Why: the exemption was meant to excuse a thin writeup of real work, not an issue requesting no change. Historical grades in `scan-output.md` were left as recorded, not regraded. Proposed and not applied: a 60-day staleness rule for claim comments with no PR or follow-up, a minimum star count or issue age in ranking, and a one-line fit ordering for non-Python repos. No rerun or regression eval of the patched rubric was performed. Limitation: all of this postdates the Maui selection and did not inform it.
 
@@ -212,31 +220,36 @@ Steps 2 through 6 describe commands that were executed on October 10 and whose o
 
 The original complete before-run transcript was saved after the first investigation plan had already said it was missing. The later recapture fills that evidence gap; it does not mean the transcript existed when the plan was first written.
 
-The following is a **newly documented recipe**, not a claim of a newly executed run. Run it from a clone containing the contribution commit after setting up the documented SDK/workloads; it creates a separate worktree with the new test and restores only the old provider into that worktree:
+The following is a **newly documented, unexecuted reproduction recipe**, not a claim of a run. Run it from a clone containing the contribution commit after setting up the documented SDK/workloads. It creates a separate worktree with the new test, restores only the old provider there, and runs both test commands from inside that worktree so they use that checkout's repository configuration. The two exit statuses are recorded separately: the before run is evidence only if its output shows the specific `.Build().UseMauiCommunityToolkit()` mismatch, not merely a nonzero exit (the October 17 `NU1902`/`NU1903` restore failure below is an example of a nonzero exit that proves nothing about the code fix). Nothing is deleted automatically, so diagnostic output survives an unexpected failure.
 
 ```bash
+#!/usr/bin/env bash
+# bash only: PIPESTATUS[0] below reads the dotnet exit code through the tee pipe (zsh spells it pipestatus).
+# No set -e: the before run is expected to fail and must not stop the comparison.
 contribution_sha=915838870f6bb95cfc3993dbc895a8016ba34b9f
 provider_path=src/CommunityToolkit.Maui.Analyzers.CodeFixes/UseCommunityToolkitInitializationAnalyzerCodeFixProvider.cs
 test_project=src/CommunityToolkit.Maui.Analyzers.UnitTests/CommunityToolkit.Maui.Analyzers.UnitTests.csproj
+test_filter='FullyQualifiedName~VerifyCodeFixInitializesToolkitBeforeBuild'
 comparison_root="$(mktemp -d)"
 
 git worktree add --detach "$comparison_root/before" "$contribution_sha"
-git show "${contribution_sha}^:${provider_path}" \
-  > "$comparison_root/before/$provider_path"
+git show "${contribution_sha}^:${provider_path}" > "$comparison_root/before/$provider_path"
 
-# Before: new regression test with the original provider.
-/usr/local/share/dotnet/x64/dotnet test \
-  --project "$comparison_root/before/$test_project" \
-  -- --filter "FullyQualifiedName~VerifyCodeFixInitializesToolkitBeforeBuild"
+# Before: new regression test with the original provider. Expected: failure whose
+# output shows ".Build().UseMauiCommunityToolkit()" against the expected source.
+( cd "$comparison_root/before" && /usr/local/share/dotnet/x64/dotnet test \
+    --project "$test_project" -- --filter "$test_filter" ) | tee "$comparison_root/before-run.txt"
+before_status=${PIPESTATUS[0]}
 
-# After: restore the submitted provider in the same comparison worktree.
+# After: restore the submitted provider in the same worktree. Expected: exit 0, 1 passed.
 git -C "$comparison_root/before" restore --source="$contribution_sha" -- "$provider_path"
-/usr/local/share/dotnet/x64/dotnet test \
-  --project "$comparison_root/before/$test_project" \
-  -- --filter "FullyQualifiedName~VerifyCodeFixInitializesToolkitBeforeBuild"
+( cd "$comparison_root/before" && /usr/local/share/dotnet/x64/dotnet test \
+    --project "$test_project" -- --filter "$test_filter" ) | tee "$comparison_root/after-run.txt"
+after_status=${PIPESTATUS[0]}
 
-git worktree remove --force "$comparison_root/before"
-rmdir "$comparison_root"
+echo "before exit: $before_status (evidence only if before-run.txt shows the source mismatch)"
+echo "after exit:  $after_status (expected 0)"
+echo "logs kept under $comparison_root; remove the worktree yourself with: git worktree remove \"$comparison_root/before\""
 ```
 
 A later reproduction attempt on October 17 stopped before the tests ran: package restore raised `NU1902` and `NU1903` for `System.Security.Cryptography.Pkcs` 9.0.6, treated as errors. That attempt is a dependency/setup failure, not a second observation of the code-fix defect. It neither replaces the October 10 before/after results nor proves that the regression disappeared. I did not change dependencies or suppress those warnings as part of this contribution. A reader encountering that failure should record it separately rather than label any nonzero test command a successful reproduction.
@@ -251,7 +264,7 @@ A later reproduction attempt on October 17 stopped before the tests ran: package
 
 - Tool: Claude Code ran the recorded before/after commands and saved transcripts; ChatGPT helped draft the test and interpretation.
 - What it produced: the failure difference, passing filtered result, full Debug result, and commit-qualified evidence filenames summarized above.
-- Difficulties: an early evidence pair named the superseded commit; the first plan also predated preservation of the complete before log. The later October 17 attempt was blocked during dependency restore. No live `repro-check` run on the claim comment or a repro report is recorded; the October 10 voice-guard passes on the local comment draft and the test commands Claude ran are not a repro-check verdict.
+- Difficulties: an early evidence pair named the superseded commit; the first plan also predated preservation of the complete before log. The later October 17 attempt was blocked during dependency restore. No successful live `repro-check` verdict for Maui #879 is established by the available records; the October 10 voice-guard passes on the local comment draft and the test commands Claude ran are not a repro-check verdict.
 - What changed: evidence was recaptured against the final revision, and this account distinguishes the original diagnostic experiment from a later environment failure.
 
 ## Solution Approach
@@ -352,7 +365,40 @@ dotnet format samples/CommunityToolkit.Maui.Sample.slnx \
   --exclude-diagnostics CS0612 CS0618 CS0672 CS1062 CS1064
 ```
 
-For local changed-file checks, the recorded form adds `--verify-no-changes` and `--include` to the appropriate project invocation. The original story used placeholders for those full formatting commands; the precise historical arguments belong to the local manifest/transcripts, so I do not reconstruct new command strings and call them verbatim old evidence. Excluding the compiler diagnostics follows the guide's stated concern about formatter-applied obsolete attributes. The test-file check emitted a workspace-load warning but exited zero; two Camera-project warnings, CS9113 and CS0649, also appeared in the supplied before/after build records and were outside the changed files.
+The four manifest checks, copied exactly from the saved `ship-manifest.md` and `results.txt` of October 10, were:
+
+```bash
+# 1. Code-fix formatting (CONTRIBUTING.md, adapted to verify the changed file)
+/usr/local/share/dotnet/x64/dotnet format src/CommunityToolkit.Maui.Analyzers.CodeFixes/CommunityToolkit.Maui.Analyzers.CodeFixes.csproj --verify-no-changes --include src/CommunityToolkit.Maui.Analyzers.CodeFixes/UseCommunityToolkitInitializationAnalyzerCodeFixProvider.cs --exclude-diagnostics CS0612 CS0618 CS0672 CS1062 CS1064
+
+# 2. Test formatting (CONTRIBUTING.md, adapted to verify the changed file)
+/usr/local/share/dotnet/x64/dotnet format src/CommunityToolkit.Maui.Analyzers.UnitTests/CommunityToolkit.Maui.Analyzers.UnitTests.csproj --verify-no-changes --include src/CommunityToolkit.Maui.Analyzers.UnitTests/UseCommunityToolkitInitializationAnalyzerTests.cs --exclude-diagnostics CS0612 CS0618 CS0672 CS1062 CS1064
+
+# 3. Release code-fix build (.github/workflows/dotnet-build.yml)
+/usr/local/share/dotnet/x64/dotnet build src/CommunityToolkit.Maui.Analyzers.CodeFixes/CommunityToolkit.Maui.Analyzers.CodeFixes.csproj -c Release
+
+# 4. Release analyzer tests (.github/workflows/dotnet-build.yml; CI reporting flags omitted locally)
+/usr/local/share/dotnet/x64/dotnet test --project src/CommunityToolkit.Maui.Analyzers.UnitTests/CommunityToolkit.Maui.Analyzers.UnitTests.csproj -c Release
+```
+
+| Check | 08:22–08:23 PDT saved logs (uncommitted working tree before the 08:29 first commit; `test_evidence.md` records the provider byte-identical and the test file differing from `91583887` by one blank line) | Gate reruns 08:33 (`9a93b284`), 08:36 (`91583887`, overall gate BLOCK on stale evidence while all four checks ran ok), 08:38 and 08:40 (`91583887`, PASS) |
+| --- | --- | --- |
+| 1. Code-fix formatting | `results.txt` records exit 0; `check-1.txt` is zero bytes, so the exit status, not the log, is the evidence | ok in all four runs |
+| 2. Test formatting | exit 0; one line: "Warnings were encountered while loading the workspace." | ok in all four runs |
+| 3. Release code-fix build | exit 0; "Build succeeded. 0 Warning(s) 0 Error(s)" | ok in all four runs |
+| 4. Release analyzer tests | exit 0; "total: 17, failed: 0, succeeded: 17, skipped: 0"; CS9113 and CS0649 Camera warnings printed | ok in all four runs; 17 passed reported in the gate's precheck lines |
+
+The gate log records only `ok` plus duration for the reruns, not a test-output transcript, so the 17-pass Release figure for `91583887` rests on the gate's `repository-checks` evidence line ("Release tests 17 passed"); the only full-output Release log is the 08:23 pre-commit one. The final-commit Debug run (`full-suite-debug-91583887.txt`, 08:39) separately shows 17 passed.
+
+Excluded checks, copied from the manifest's excluded table with their recorded date and original reason:
+
+| Excluded check | Since | Recorded reason (as written on 2026-10-10) |
+| --- | --- | --- |
+| Full-solution formatting: `dotnet format samples/CommunityToolkit.Maui.Sample.slnx --exclude-diagnostics CS0612 CS0618 CS0672 CS1062 CS1064` | 2026-10-10 | "The documented command rewrites tracked files across the solution. Changed-file verification above gates this bounded change instead." |
+| Other component builds and suites: other build/test commands in `.github/workflows/dotnet-build.yml` | 2026-10-10 | "This change touches only the initialization code-fix provider and its test. The remaining component/platform matrix is deferred to upstream CI; no local pass is claimed." |
+| Benchmarks: commands in `.github/workflows/benchmarks.yml` | 2026-10-10 | "No runtime analyzer logic changed. The change targets code-fix invocation selection; benchmark execution is excluded from this focused gate." |
+
+Later correction, not part of the original rationale: `--verify-no-changes` would have let the full-solution command run without rewriting files, so the first reason overstated the obstacle; the real limitation was the narrower scope I chose. Excluding the compiler diagnostics follows the guide's stated concern about formatter-applied obsolete attributes.
 
 Limitations and deliberate exclusions:
 
@@ -403,6 +449,12 @@ A temporary-worktree attempt to rerun the old-provider comparison stopped on `NU
 **2026-10-21 — Monitor, declined draft, and documentation review**
 
 The official Unit 8 starter was absent locally, then downloaded and installed. Empty playbook sections blocked a full monitor run until the adopted rules were written. The state canary and full run read the already merged PR, and I declined the draft after its limited context became clear. This documentation review then checked the official story template, pinned source, commit metadata, issue-comment timestamps, and PR records. It corrected the original test taxonomy, the initial-post/guard chronology, the early Release-log provenance, and overbroad workload/coverage statements. No new code tests, scout scan, or gate run was performed for the writing expansion.
+
+**2026-10-27 — Documentation accuracy pass and course-instruction gap**
+
+Separated the October 21 public-record snapshot from this documentation revision date; editing this file did not refresh PR, lock, or `license/cla` status. Copied the four manifest commands, their saved outcomes, and the three dated exclusions verbatim from the October 10 records into Testing Strategy, and rewrote the unexecuted worktree recipe so each test runs from inside the comparison worktree with separate exit statuses and no automatic cleanup. Corrected the scout description: the supplied starter was installed, my existing profile restored, the full JSON-field query recorded, and the #869 responsiveness finding stated as its sample (0 owner comments across five sampled issues) rather than as an absolute.
+
+Course-instruction gap, stated exactly. The Unit 2 and Unit 3 activity pages require a frozen eval run and a quoted rubric check in `tools/repro-check/` and `tools/plan-check/`. Those are met by fixture-based harness runs on course packages, not by anything involving Maui: `repro-check` scored 18/20 on 2026-09-23 and `plan-check` 20/20 on 2026-10-01, both against 20 course eval packages. The only documented live attempts were for classroom issue codepath/pathreview-ai301-fa26-s1 #62: the Unit 2 record says the live `repro-check` run was not completed because credits were unavailable, and the Unit 3 record says the live `plan-check` attempt was blocked by the individual spend limit. For Maui #879, the retained records contain no invocation, block message, or verdict from either skill; the gate's embedded `pr-precheck` is the only skill verdict recorded for this contribution. No successful live `repro-check` or `plan-check` verdict for Maui #879 is established by the available records; the absence of a record is not proof that no attempt was ever made. The installed `SKILL.md` files define a live mode that grades a draft claim comment or plan comment before posting. The official Assignment 5 rubric rows name no repro-check or plan-check verdict. A retrospective live run on the posted claim comment and `drafts-879/plan.md` would be an optional improvement; it could not create a pre-posting verdict for October 10, and none has been run as of this entry.
 
 **Toolkit**
 

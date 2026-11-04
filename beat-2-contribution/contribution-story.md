@@ -83,7 +83,7 @@ At the baseline, issue #879's request for analyzer tests was partly out of date:
 
 The toolkit supplies two related pieces of developer tooling. An **analyzer** inspects source and reports diagnostic MCT001 when it recognizes a `UseMauiApp` invocation without a toolkit-initialization call in the enclosing method. A **code-fix provider** offers an edit in response to that diagnostic. Detecting a missing call and inserting the call correctly are separate behaviors, so tests of the first do not automatically cover the second.
 
-The baseline analyzer test project passed 16 tests. The initialization class contained six: **one diagnostic-ID assertion and five analyzer-behavior tests**. The other ten were in the Camera and MediaElement analyzer classes. After my new test, the totals were 17 across the project and seven in the initialization class. Calling all six original tests “diagnostic behavior tests,” or all sixteen “tests for this analyzer,” would be inaccurate.
+The contemporaneous narrative record says the baseline analyzer test project passed 16 tests; no retained execution log establishes that result. The initialization class contained six: **one diagnostic-ID assertion and five analyzer-behavior tests**. The other ten were in the Camera and MediaElement analyzer classes. After my new test, the totals were 17 across the project and seven in the initialization class. Calling all six original tests “diagnostic behavior tests,” or all sixteen “tests for this analyzer,” would be inaccurate.
 
 | Existing initialization-class test | What it checks |
 | --- | --- |

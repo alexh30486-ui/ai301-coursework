@@ -24,7 +24,7 @@ This repository follows my progression from classroom issue selection and reprod
 | Human review | [TheCodeTraveler's APPROVED review](https://github.com/CommunityToolkit/Maui/pull/3343#pullrequestreview-5479894783) |
 | Final contribution commit | [`91583887`](https://github.com/alexh30486-ui/Maui/commit/915838870f6bb95cfc3993dbc895a8016ba34b9f) |
 | Implementation size | Two files; 52 insertions and one deletion |
-| Test totals | 16 baseline project tests; 17 after adding one regression |
+| Test totals | Baseline: 16 project tests (contemporaneous narrative record; no retained execution log); 17 after adding one regression |
 | Target-class coverage | One ID assertion plus five analyzer-behavior tests; one code-fix test added |
 | Outcome | PR merged October 10, 2026; issue closed as completed |
 | Later tool work | Scout and orientation October 17; monitor October 21; explicitly retrospective |
@@ -57,7 +57,7 @@ The submitted provider change selects the syntax node at the diagnostic's full s
 
 | Observation | Supported interpretation |
 | --- | --- |
-| Existing project passed 16 tests | Baseline was green, but the original offered edit was not covered |
+| Baseline: 16 passed (narrative record; no retained execution log) | The original suite was reported green, but the offered edit was not covered |
 | New regression failed with old provider | The test detected the wrong generated call order |
 | Same regression passed after span selection | The submitted change corrected that exercised edit |
 | Full Debug and Release reports show 17 passed | Existing project tests and the added regression passed in the recorded runs |

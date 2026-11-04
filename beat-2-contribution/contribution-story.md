@@ -22,7 +22,7 @@
 
 **Latest public-record snapshot:** October 21, 2026 (PR, issue, review, check, and CLA status as read that day; not refreshed by later edits).
 
-**Latest documentation revision:** October 27, 2026 (wording and evidence corrections only; no tests, tools, or GitHub reads were rerun).
+**Latest documentation revision:** November 4, 2026 (this story expansion and README correction; no project tests, tools, or GitHub reads were rerun).
 
 The original issue asked for tests for an initialization analyzer. The checkout already contained tests, so my investigation focused on what they actually verified. One new test applied the offered code fix and inspected the resulting source; it exposed that the fix placed `.UseMauiCommunityToolkit()` after `.Build()`. The submitted change corrected the selected syntax node and added that regression test: two files, 52 insertions, one deletion.
 
@@ -73,6 +73,8 @@ The course Issue Selection site later showed #879 in my claimed issues alongside
 - Difficulties: ranking by fewest comments then newest surfaced minutes-old issues in zero-star repos and auto-generated daily issues; two of five paid grading slots went to issues already taken, which ranking fields cannot see. The scope rule passed #869 because the exemption for thin owner/starter-label writeups applied before the "names the behavior, files, or symptoms" clause was reached. "Available to claim" set no age threshold, so months-old claim-shaped comments on both direct candidates were read as not current without a stated cutoff. The Python-only query still returned a frontend feature, and the profile had no explicit rule ranking non-Python repos lower.
 - What changed: same day, I added fail branch (g) to `rubric.md`: "the title, body, and thread together name no behavior, file, symptom, or concrete deliverable at all. Author identity and starter labels never override (g)"; the exemption now reads "provided (g) below does not hold" and the closing clause "When none of (a)-(g) holds, pass." Why: the exemption was meant to excuse a thin writeup of real work, not an issue requesting no change. Historical grades in `scan-output.md` were left as recorded, not regraded. Proposed and not applied: a 60-day staleness rule for claim comments with no PR or follow-up, a minimum star count or issue age in ranking, and a one-line fit ordering for non-Python repos. No rerun or regression eval of the patched rubric was performed. Limitation: all of this postdates the Maui selection and did not inform it.
 
+This phase clarified the difference between candidate ranking and eligibility reasoning. A low comment count and recent update helped order scan results, but neither exposed the open PRs already claiming two candidates; that required inspecting linked work. Conversely, an owner and a starter label were useful context but could not supply a missing deliverable. The durable result was the explicit branch-(g) rule and a note of unresolved ranking questions, not a retroactive claim that the scout chose the Maui issue.
+
 ## Understanding the Issue
 
 **Problem Description**
@@ -93,6 +95,10 @@ The baseline analyzer test project passed 16 tests. The initialization class con
 | `VerifyErrorsWhenUseMauiCommunityToolkitIsCommentedOut` | An ordinary commented-out call does not count as initialization |
 
 The class already imported a `CSharpCodeFixVerifier` specialized with the analyzer and provider. However, the existing helper called `VerifyAnalyzerAsync`; merely mentioning a code-fix type in the verifier's generic arguments did not apply the fix in those tests. The added `VerifyCodeFixInitializesToolkitBeforeBuild` explicitly called `VerifyCodeFixAsync`, supplied expected fixed source, and exercised the edit.
+
+That distinction follows the actual test path rather than the test class name. Five methods call the `VerifyMauiToolkitAnalyzer` helper, which asks the analyzer whether a diagnostic should exist at a marked span. The helper does not request a code action or compare a changed document. The class's static verifier type makes the code-fix testing APIs available, but availability is not execution: only the new method calls the code-fix verification overload. Thus the original six tests were useful coverage for diagnostic identity and analyzer decisions, yet they could all pass while the provider still constructed a bad edit.
+
+The diagnostic's location is the bridge between those two components. The analyzer marks the full `UseMauiApp<T>()` invocation; the provider is expected to use that location to decide which expression receives the new call. A syntax tree contains nested invocations, so starting at a token and walking ancestors can reach larger expressions that are not the diagnostic target. If the provider selects `Build()` instead, its edit can be internally consistent and still be attached at the wrong point. The analyzer can then see a method containing `UseMauiCommunityToolkit` and suppress MCT001, even though the generated chain is not the expected builder configuration. A diagnostic can therefore be reported and cleared correctly while the offered repair is wrong.
 
 The distinction matters because the analyzer's current implementation checks the enclosing method for a matching call name. A wrongly placed `.UseMauiCommunityToolkit()` can therefore make MCT001 disappear without making the edited program correct. The new test examines the resulting source instead of relying only on disappearance of the original diagnostic. This contribution did not change or comprehensively validate the analyzer's method-wide, syntax-based detection.
 
@@ -156,6 +162,8 @@ The regression verifier reported that this generated source differed from the ex
 - Difficulties: the first proposed `.First()` change did not satisfy the test; early wording also blurred ID tests, analyzer tests, and code-fix tests.
 - What changed: the implementation uses the diagnostic's complete span, and this account now distinguishes the one ID assertion, five behavior tests, and one added edit test precisely.
 
+The orientation notes helped make the boundary concrete: analyzer-only methods used the helper that calls `VerifyAnalyzerAsync`, while the regression used the overload that passes both expected source and reference assemblies to `VerifyCodeFixAsync`. That cross-check is why the narrative describes missing code-fix coverage rather than saying the class had no relevant tests. It also exposed nearby observations, such as unconditional import insertion, that the focused test did not cover. Naming those adjacent gaps prevents the new regression from being read as a general certification of the provider.
+
 ## Reproduction Process
 
 **Environment Setup**
@@ -216,6 +224,10 @@ The [contributing guide pinned to the contribution commit](https://github.com/Co
 
    Run the full project as a separate regression check; the recorded corrected-suite result was 17 passed.
 
+Each stage answers a different question. The baseline run established that the pre-existing analyzer project could complete successfully in the configured environment; it did not test the absent code-fix behavior, and its 16-pass result survives only in the contemporaneous written account. Adding the regression while retaining the old provider then made the proposed edit observable. The meaningful failure was not simply that the process returned exit code 2: it reached the test assertion and printed the expected-versus-actual source order. Restoring the corrected provider and rerunning the same filter held the input and expectation constant, so the passing result is a direct comparison. The full-project run broadened that check to interactions with the existing tests, while remaining limited to this analyzer test project.
+
+The chronology also changes how to interpret failures. The historical before/after pair and full Debug run executed on October 10; the `NU1902`/`NU1903` attempt stopped in package restore, before the test host reached any assertion. A restore failure can signal a real environment or dependency problem, but it contains no observation about whether the provider chooses the right node. Separately, the recipe below is a reproducibility aid written into this document: its commands were not executed as part of this revision. Keeping these three kinds of record separate prevents a plausible command listing or a generic failure status from being mistaken for a historical test result.
+
 Steps 2 through 6 describe commands that were executed on October 10 and whose output was saved. The recipe below is different: it is written for someone reproducing the comparison later and was not itself run.
 
 The original complete before-run transcript was saved after the first investigation plan had already said it was missing. The later recapture fills that evidence gap; it does not mean the transcript existed when the plan was first written.
@@ -267,6 +279,8 @@ A later reproduction attempt stopped before the tests ran: package restore raise
 - Difficulties: an early evidence pair named the superseded commit; the first plan also predated preservation of the complete before log. A later attempt, exact date unverified, was blocked during dependency restore. No successful live `repro-check` verdict for Maui #879 is established by the available records; the October 10 voice-guard passes on the local comment draft and the test commands Claude ran are not a repro-check verdict.
 - What changed: evidence was recaptured against the final revision, and this account distinguishes the original diagnostic experiment from a later environment failure.
 
+The failure comparison was useful because both sides use the same test and differ in the provider version. The expected line places initialization between `UseMauiApp` and `Build`; the actual line reverses those calls. That textual mismatch identifies the observable defect more specifically than a stack trace or a red test badge would. It does not, by itself, prove a C# compiler diagnostic, which is why the separate receiver-type discussion is presented as source-based reasoning. Likewise, the missing baseline transcript is not repaired by the later 17-test log: that log proves the post-addition total, while the original 16-pass baseline remains qualified as narrative evidence.
+
 ## Solution Approach
 
 **Analysis**
@@ -295,6 +309,10 @@ This leaves the code-action registration and document-edit routine unchanged. Th
 
 The change deliberately does not redesign analyzer detection, alter other providers, deduplicate imports, change public APIs, or reformat the solution. The later orientation noticed possible duplicate-import behavior and a diagnostic-category inconsistency, but neither was implemented or tested in this PR. They are observations outside this contribution, not additional resolved bugs.
 
+The replacement is narrow because it changes how this provider maps a diagnostic to an expression, not what the analyzer considers missing or what the extension does. The analyzer reports the span of the `UseMauiApp` invocation, and `FindNode` uses that complete range to recover the corresponding syntax node; `getInnermostNodeForTie: true` gives a deterministic choice if nodes share the same span. The provider still requires an `InvocationExpressionSyntax` and preserves its existing exception path if selection fails. This directly uses information the provider already received rather than guessing which ancestor in a fluent chain is intended.
+
+The unsuccessful `.First()` suggestion was a useful counterexample to treating a shorter edit as a verified fix. It changed which element of an ancestor enumeration was selected, but the diagnostic contract is about a particular source span, not about one end of a traversal order. The retained record establishes that the suggestion failed the new regression; it does not preserve a separate exact output for that attempt, so I do not attribute a more specific generated expression to it. The comparison test, not the apparent simplicity of either LINQ endpoint, decided which implementation to keep. No alternative implementation was tested beyond that rejected suggestion and the span-based change.
+
 **Implementation Plan**
 
 The implementation target was `UseCommunityToolkitInitializationAnalyzerCodeFixProvider.cs`: in `RegisterCodeFixesAsync`, replace ancestor-based invocation selection with `root.FindNode(diagnosticSpan, getInnermostNodeForTie: true)`. Leave `AddUseCommunityToolkit` unchanged. Add the regression as `VerifyCodeFixInitializesToolkitBeforeBuild` in `UseCommunityToolkitInitializationAnalyzerTests.cs`.
@@ -316,6 +334,8 @@ The plan changed in three material ways: the requested “untested analyzer” b
 - Difficulties: an AI suggestion sounded plausible while failing the actual test; the original issue wording also did not match the current checkout.
 - What changed: the test result governed the implementation decision. No separate successful live `plan-check` invocation is established by these records, so using its structure is not reported as a passed tool run.
 
+The test kept the plan falsifiable: the old provider had to produce the wrong order, and the proposed provider had to produce the expected order under the same test. This let the code suggestion be judged on behavior rather than on whether it matched an explanation written after the fact. The final implementation also respected the planned boundary: one selection expression in the provider and one regression method in the existing test class. The later orientation's extra observations were left out because they had no regression evidence or implementation requirement in this change.
+
 ## Testing Strategy
 
 The central question was observable: **when the real provider handles MCT001 on a chain ending in `Build()`, does the resulting source place initialization on the builder?** Two observable checks answered it:
@@ -324,6 +344,10 @@ The central question was observable: **when the real provider handles MCT001 on 
 2. **Existing-suite regression:** the full analyzer test project passed all 17 tests in Debug and Release, showing that the new code-fix test and existing diagnostic tests passed together.
 
 The before and after runs used the same expected source. Formatting and build checks were additional repository checks, not substitutes for these two behavior checks.
+
+The targeted check is deliberately stronger than asserting that MCT001 disappears. The test marks the analyzer's reported location, asks the verifier to run the analyzer and provider, and compares the complete normalized document, including the namespace import and the position of `Build()`. That makes the faulty edit visible even though the analyzer's method-wide detection could accept the misplaced call afterward. A pass establishes that this input produces the expected edit through the Roslyn testing harness; it does not establish that the generated text was compiled as an application, that an IDE displayed the action correctly, or that every syntactic form of startup chain is covered.
+
+The second check serves a different purpose: the full analyzer project tests whether the added code-fix scenario coexists with the existing initialization, Camera, and MediaElement cases wired into that project. The 17-pass Debug record is tied to final commit `91583887`. Release evidence has two levels: a full transcript exists for an earlier pre-commit run, while the final-commit gate records the Release test check as `ok` and its precheck reports 17 passed. The gate summary is not a full transcript. Together these records support a final-commit Release pass, but the provenance should not be rewritten as though the early transcript itself ran after the amend.
 
 | Check | Recorded outcome | What it supports | What it does not establish |
 | --- | --- | --- | --- |
@@ -416,6 +440,8 @@ Limitations and deliberate exclusions:
 - Difficulties: workspace warnings could be mistaken for failure, and an early passing report could be mistaken for evidence about the final amended commit.
 - What changed: exit codes, configuration, source revision, and the boundary of each check are now stated together. Proposed commands, historical commands, public CI results, and newly failed setup attempts are not pooled into one undifferentiated “all checks passed” claim.
 
+The gate chronology illustrates why an overall verdict and individual checks must be read separately. At 08:36 the overall gate blocked on stale regression evidence even though all four manifest checks ran and were summarized as `ok`; those results did not make the evidence reference current. After recapturing output against `91583887`, later runs passed. The full check transcripts and the gate's short `ok`-plus-duration summaries remain different records: the former preserve command output, while the latter support that a check completed in that gate run. The gate also ran its own precheck, whose rubric verdict is not a live `repro-check` or `plan-check` result.
+
 ## Implementation Notes
 
 These entries preserve the dates of the work. This expanded October 21 edition adds explanations and public-record corrections from the retained records; it is not presented as an untouched contemporaneous transcript.
@@ -462,6 +488,8 @@ Course-instruction gap, stated exactly. The Unit 2 and Unit 3 activity pages req
 - What it produced: the final two-file change, dated local records, and the more precise chronology above.
 - Difficulties: author and committer times were conflated, local draft history was conflated with public comment creation, and preserved old reports could be mistaken for final-revision evidence.
 - What changed: the final commit and public timestamps now anchor the chronology, while uncertain local ordering remains approximate. Documentation corrections preserve the earlier limitations instead of rewriting history to make the process look seamless.
+
+This phase used different records for different parts of the timeline: GitHub metadata anchors public commit, comment, review, merge, and lock events; the saved gate reports show local check and gate outcomes; and the later monitor report captures what the monitor saw on October 21. None is a substitute for the others. In particular, a retrospective monitor snapshot cannot establish an October 10 CLA reply, and the documentation review date does not refresh the status captured by that snapshot. Keeping the record types separate made the dates and unresolved CLA state easier to read without claiming more certainty than the sources provide.
 
 ## Pull Request
 
@@ -518,6 +546,8 @@ A pending check and UNKNOWN mergeability on an already merged PR do not undo the
 - Difficulties: local draft wording did not always match public prose; the monitor lacked issue-closure, lock, and CLA context; a queued integration could be mistaken for an open PR blocker after merge.
 - What changed: the story now separates the public issue/PR record from local draft passes, records the declined draft, and preserves CLA uncertainty without claiming the agreement was accepted or waived. No follow-up was posted solely to manufacture activity for the assignment.
 
+The monitor run is a useful example of why an automated move should be treated as a draft, not an instruction. Its first report saw MERGED and APPROVED and selected the merged-follow-up form; the draft itself made the issue closure conditional and raised an untested duplicate-import possibility. Supplementary inspection found the issue already closed and the PR locked, so the suggested message had stale assumptions and no necessary action to perform. The playbook explicitly says not to nudge merged or closed work. Declining the draft was consistent with that rule, and it left the issue, PR, playbook, and monitor configuration unchanged.
+
 ## Learnings and Reflections
 
 **Technical Skills Gained**
@@ -529,6 +559,10 @@ A pending check and UNKNOWN mergeability on an already merged PR do not undo the
 - **Separating source conclusions from executed observations.** The source supports the receiver-mismatch explanation. The saved failing test directly shows a fixed-source difference. Those are related forms of evidence, but I should not claim a separate compilation experiment that I did not perform.
 - **Understanding build dependencies.** This analyzer test project references platform-adjacent toolkit projects, which led to workload setup even though the edited file was a Roslyn provider. That observed dependency should not be generalized to every analyzer project.
 - **Using public state carefully.** A merged PR, a queued CLA integration, a locked thread, and a recent bot event can coexist. A monitor's first summary is a starting point for deciding whether a draft makes sense, not automatic authorization to send it.
+
+These are connected habits rather than isolated facts. First, inspect the test's actual assertion path before deciding what coverage exists; a class name or generic type can overstate what ran. Second, turn a suspected defect into a small failing test whose expected output names the behavior, then evaluate suggestions against that test. Third, preserve which revision, configuration, and command produced each result. A test count without a revision is weaker evidence than a count tied to a commit, and a gate's concise status line should not be expanded into output it never recorded.
+
+Evidence should also keep its limits attached. In this case, the verifier mismatch was directly observed, the receiver incompatibility was inferred from source signatures, and interactive IDE behavior was not checked. The restore incident was a real failed attempt but not a test result. The public merge was real, while the CLA reply remained uncertain. Recording those distinctions did not diminish the contribution; it made it possible to explain exactly which conclusion followed from each artifact and which conclusions remained open.
 
 **Challenges Overcome**
 
@@ -551,6 +585,8 @@ Not every difficulty was resolved. The later dependency-audit failure stopped a 
 I would inspect the existing tests before relying on an issue's old description and save baseline and before-and-after output as I go.
 
 The concrete process implications in this record are to preserve a baseline before editing, keep the first failing output, tie later validation to the final revision, check the public posted text against the local draft, and run selection/orientation tools during their intended phases. Those are prospective improvements suggested by the documented gaps, not claims that every one was already part of my original workflow. The correction to the scout also demonstrates a useful constraint: a title, author role, or label is not enough to establish a real deliverable when the request itself remains undefined.
+
+These implications come from specific friction points in this work. The baseline total is supported by the contemporaneous narrative but not by a retained execution log, so preserving that output would have made the before/after record more symmetrical. The stale-evidence block shows why a test result should travel with its revision identity, not merely with a branch name. The mismatch between some local drafts and the public comment shows why publication needs its own verification step. And the monitor's conditional closeout text shows why any generated message must be checked against current issue and PR state before it is sent. None of these observations changes what happened in October; they explain what the records make visible about the process.
 
 ## Resources Used
 

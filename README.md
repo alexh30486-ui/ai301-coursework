@@ -6,7 +6,9 @@
 
 **Course:** CodePath AI301 — Fall 2026
 
-**Documentation reviewed:** October 21, 2026
+**Public-record snapshot:** October 21, 2026
+
+**Documentation revision:** November 4, 2026
 
 This repository follows my progression from classroom issue selection and reproduction to a real C# contribution in the .NET MAUI Community Toolkit. The earlier work developed evaluation rubrics and communication tools. The real contribution applied those ideas to an existing project's analyzer/code-fix tooling, exposed a gap in what the tests checked, and resulted in a merged two-file change.
 
@@ -110,9 +112,11 @@ The earlier reported evaluation agreements were **20/20 for Unit 1** and **18/20
 | `beat-1-sandbox/unit-2/` | Reproduction analysis and its evaluation record |
 | `beat-1-sandbox/unit-3/` | Planning/implementation account, plan, and evaluation record |
 | `beat-1-sandbox/unit-4/` | PR-preparation account and evaluation record |
-| `beat-2-contribution/contribution-story.md` | The complete graded Assignment 5 narrative |
-| `tools/` | Saved coursework skill folders; their separate portfolio assessment is outside this story |
-| `skill/` and `eval/` | Earlier starter/rubric and evaluation materials retained in the course repository |
+| `beat-2-contribution/contribution-story.md` | The graded Assignment 5 narrative; primary reading for the real contribution |
+| `tools/` | Saved coursework skill folders; separate portfolio assessment is outside this story |
+| `skill/` | Earlier starter, rubric, and reference material |
+| `eval/` | Evaluation fixtures, harness, and records |
+| `eval/README.md` | Evaluation instructions and usage notes |
 
 The transition between the two parts matters. Unit 1 selected classroom Path Review #73; Unit 2 investigated classroom #62. Assignment 5 concerns CommunityToolkit/Maui #879 and PR #3343. The issue numbers, repositories, local results, and evaluation scores should not be mixed across these projects.
 

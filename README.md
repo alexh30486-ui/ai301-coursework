@@ -248,8 +248,7 @@ The disagreements were:
 
 A later attempt using revised wording encountered errors on 15 packages. That partial run did not replace the saved complete evaluation. I restored the rubric and evidence guide corresponding to the saved run.
 
-### Analysis: an honest failure to reproduce
-
+### Analysis: an honest review and look at some of the bottom line failures 
 My detailed package analysis focuses on `pkg-10`.
 
 The candidate tested the Starship issue on Linux with zsh, while the reporter used macOS with fish. The directory module remained visible. The candidate disclosed the environment differences and reported that the attempt did not reproduce the symptom.
@@ -267,23 +266,54 @@ The exact check quotations and proposed validation approach appear in [reproduct
 The live `repro-check` runs on my claim and full reproduction package were not completed because Claude credits were unavailable. I have not claimed that the skill approved the posted comments.
 
 My posted reproduction includes the tested commit, environment, request command, output, and expected behavior. It does not include every dependency-installation and service-start command. Those setup details would make reproduction from a clean environment easier.
-
 ## What I learned
 
-The evaluation score and the quality of the evidence answer different questions. Agreement with a fixed set of labels helps test the rubric, while live work requires checking the actual environment and recording what happened.
+The evaluation score and the actual evidence answer different questions.  
+Getting a high match rate on a fixed set of labeled examples is useful for checking if the rubric is consistent. It shows the tool is applying the same rules the same way. But that score by itself does not prove the tool works well on real issues it has never seen. For live work I still had to look at the real environment, check the actual output, and write down what happened.
 
-Three practices mattered most:
+Three things mattered most:
 
-1. **Separate completed runs from attempts.** A stalled or partial evaluation cannot replace a complete harness record.
-2. **Compare the precise behavior.** An error response alone does not establish that the intended bug was reproduced.
-3. **Explain the check's trade-off.** A useful reflection identifies what a rule catches, what it can miss, and how a revision would be tested.
+### 1. Separate finished runs from incomplete ones
 
-## Assignment 5 submission
+A run that stalled, timed out, or only partly finished should not be treated the same as a complete record.  
 
-Submit the entire course repository through the **Unit 5 Assignment tab**:
+If it didn’t finish cleanly, I marked it as incomplete. Using a partial result as if it were a full success made it harder to tell whether a later change actually helped.
 
-[https://github.com/alexh30486-ui/ai301-coursework](https://github.com/alexh30486-ui/ai301-coursework)
+In practice this meant:
+- Clearly labeling incomplete runs as attempts
+- Not treating a partial score as proof that the tool worked
+- Waiting for a full finished record before claiming success
 
-The supplied assignment instructions identify **November 8, 2026, at 11:59 PM PST** as the deadline. Graders read the contribution story at its required path, the issue thread, and the PR page; no separate tool files, evidence uploads, or monitor output are submitted for Assignment 5. The four weekly Toolkit entries and seven phase Toolkit blocks are contained in the story.
+### 2. Check the exact behavior
 
-A merged PR is the project's outcome, while course submission is a separate action. A documentation commit, successful push, or README link does not prove that the course portal submission was completed.
+Just seeing an error message was not enough.  
+
+I still had to check whether the error matched the bug described in the issue, whether the steps actually caused the problem, and whether the output lined up with what was claimed. Without that, it was easy to accept a generic failure as proof even when the real issue never showed up.
+
+I tried to ask:
+- Does this failure match the issue description?
+- Did the reported steps actually trigger it?
+- Is the error consistent with the claimed cause?
+
+### 3. Explain what the rule catches and what it can miss
+
+A useful note should say what a rule does well, what it can still get wrong, and how any change would be tested later. Without that, the change stays unexamined.
+
+For example, making a scope rule stricter might stop some bad accepts, but it could also reject short issues that were still valid. The only way to know is to run both the old and new versions on the same cases and compare the results.
+
+I tried to answer:
+- What does this rule catch reliably?
+- What kinds of cases can it still miss or reject by mistake?
+- How will the new version be checked before trusting it?
+
+### Why the difference matters
+
+High consistency on fixed test cases is useful, but it is not enough by itself.  
+
+Consistency metrics only answer:  
+“Does this tool give the same answers on the same known examples?”  
+
+Live evidence answers a different question:  
+“Did this tool make a solid decision on a real issue in a real repository?”  
+
+Treating the first kind of result as if it answered the second one is an easy way to overstate what the tools actually showed.

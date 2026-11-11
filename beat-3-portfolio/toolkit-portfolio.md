@@ -13,6 +13,34 @@
 
 I chose these four because together they cover the work I did this term: finding a contribution, communicating about it, checking it before submission, and deciding whether to follow up. The issue scout helped me decide which issues deserved a closer look; a high search ranking alone did not make an issue a good fit. The voice guard checked drafts for claims that needed nearby evidence. The ship gate made me choose which checks mattered for my change. PR-monitor helped me decide whether a follow-up was appropriate after the PR was already open. The scout and orientation work on October 17 and the monitor run on October 21 happened after the Maui PR, so they did not guide that contribution.
 
+### How to read the tool records
+
+| Log label | Simple meaning |
+| --- | --- |
+| `manual` | I explicitly ran a check. |
+| `hook` | An automatic check ran when a command was attempted. |
+| `stop` | The check found a problem or could not complete a required check. |
+| `pass` | The draft or command passed that particular check. |
+| `target` | The file or command being checked. |
+
+A pass applies only to the check and target named in that entry. It does not automatically mean the code works, a message was posted, or the whole contribution is ready.
+
+### The Maui contribution and the toolkit
+
+The Maui contribution was the software change I submitted. The toolkit helped me evaluate work, check communication, review evidence before opening a PR, and consider follow-ups afterward.
+
+In CommunityToolkit/Maui, an analyzer reports a missing initialization call. A separate code-fix provider offers to insert that call. The defect I tested was in the offered edit: it placed `.UseMauiCommunityToolkit()` after `.Build()` instead of before it. I added a test comparing generated code with expected code, then changed how the provider selected the invocation to edit.
+
+| Part of the work | What changed | What that change means |
+| --- | --- | --- |
+| Maui contribution | Code-fix provider and regression test | Changed project behavior and added a check for the defect. |
+| Issue scout | Acceptance rubric, including branch (g) | Changed which issue descriptions the scout should accept. |
+| Voice guard | Communication guide | Changed the written rules used to check drafts; the saved comparison does not establish who authored each line. |
+| Ship gate | Initial repository-specific manifest | Configured which repository checks to run and recorded exclusions. |
+| PR-monitor | Initial playbook configuration | Set waiting periods, nudge limits, and rules for considering follow-ups. |
+
+Configuring a tool is not the same as rewriting its implementation. I filled in the ship manifest, but it stayed unchanged during the later gate retries; recovery involved correcting the evidence package. Declining the monitor's draft did not change the monitor's code. The scout and orientation work on October 17 and monitor run on October 21 were part of my term's toolkit work, but happened after October 10 and did not guide the Maui selection or fix.
+
 **Issue scout**
 
 **What it is, and the judgment hole I wrote:**
@@ -57,13 +85,19 @@ The backup is timestamped 2026-10-03 15:35:16 and the current guide is 2026-10-1
 
 > Quoted exact excerpt from the guard log, 2026-10-10: “2026-10-10 08:31 [manual] pass”
 
-The 08:30 stop and 08:31 pass both targeted the same local `issue-comment-draft.md`. A second draft (`pr_draft.md`) also received passes. The adjacent output says “voice-guard: pass. Your rules hold; posting.”
+**What the stop and pass actually show**
 
-This shows the guard stopped a local draft for the evidence-order rule and later recorded a pass on it. The guide content really did change. What it does **not** show is a before/after version of the draft itself, or that the public comment was created under the guard, or that any passed local draft was posted word-for-word. The checker only looks at voice rules; it never judges technical correctness.
+The target matters when reading this log. At 08:30, `pr_draft.md` passed while `issue-comment-draft.md` stopped. Those were different files, so the results do not contradict each other.
 
-> Quoted exact excerpt from `check_voice.py`: “It checks voice rules only; it never judges the technical content of what you post.”
+At 08:31, the same `issue-comment-draft.md` received a pass. That gives me a clear sequence: the guard stopped that local draft for the evidence rule, then later accepted it. The retained records do not show the exact sentence-level edit between those checks.
 
-The retained records do not identify the exact sentence-level edit made after the stop. The evidence-order rule and AI-disclosure guidance were adopted in my guide; the backup diff shows guide text changed, but does not prove who wrote each line.
+The rule was “No conclusion without its artifact in the same comment.” In plain language, that means putting the proof next to the claim. If I say I reproduced a problem, the reader should be able to see the command and output supporting it.
+
+This was a communication check, not a test of the Maui code. The guard could check whether the draft followed its evidence rule, but it could not prove that the code fix worked. That required the separate regression test and its recorded results.
+
+The later 08:44 hook stop was another kind of problem: the guard could not read the body file at the supplied path. A subsequent attempt passed. That was a file-location problem, not another finding about the writing.
+
+These distinctions keep me from treating every stop as a code failure or every pass as proof of publication. I need to read the time, reason, and target together to understand what each entry actually establishes.
 
 **Ship gate**
 
